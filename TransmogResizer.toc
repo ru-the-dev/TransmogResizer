@@ -9,7 +9,13 @@
 ## IconTexture: Interface\AddOns\TransmogResizer\Assets\logo
 ## Dependencies: Blizzard_Collections
 
+## SavedVariables: TransmogResizerAccountDB
+
 LibRu/Load.xml
 
-TransmogResize.lua
-CollectionFrame.lua
+Initialize.lua
+Database/AccountDB.lua
+
+Settings.lua
+## TransmogResize.lua
+##CollectionFrame.lua

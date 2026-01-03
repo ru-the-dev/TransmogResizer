@@ -1,11 +1,3 @@
-_G.TransmogResize = {};
-
---- @type LibRu
-local LibRu = _G.LibRu
-
-if not LibRu then
-    error("LibRu is required to initialize TransmogResize. Please ensure LibRu is loaded before TransmogResize.lua")
-end
 
 
 local buttonsLeft = {};
@@ -157,3 +149,10 @@ end)
 --     end
 -- end)
 
+
+-- Do some work when player loads in
+
+
+-- Do some work when the transmog opens
+
+-- do some work when the transmog frame updates
