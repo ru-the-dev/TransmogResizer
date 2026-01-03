@@ -1,0 +1,3 @@
+[submodule "LibRu"]
+	path = LibRu
+	url = https://github.com/ru-the-dev/LibRu.git
