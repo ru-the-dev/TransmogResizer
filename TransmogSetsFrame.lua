@@ -2,7 +2,7 @@
 -- local LibRu = _G["LibRu"]
 
 -- if not LibRu then
--- 	error("LibRu is required to initialize TransmogResize. Please ensure LibRu is loaded before TransmogResize.lua")
+-- 	error("LibRu is required to initialize BetterTransmog. Please ensure LibRu is loaded before BetterTransmog.lua")
 -- end
 
 -- local MIN_VISIBLE_SET_BUTTONS = 18
@@ -48,7 +48,7 @@
 -- 	local parent = scrollFrame.scrollChild or scrollFrame
 
 -- 	for i = (#buttons + 1), visibleNeeded do
--- 		local buttonName = (scrollFrame:GetName() or "TransmogResizerSetsButton") .. i
+-- 		local buttonName = (scrollFrame:GetName() or "BetterTransmogSetsButton") .. i
 -- 		buttons[i] = CreateFrame("BUTTON", buttonName, parent, template)
 -- 	end
 

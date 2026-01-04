@@ -23,7 +23,7 @@ EXCLUDES = {
 
 def read_version() -> str:
     """Read the semantic version from the main TOC file."""
-    toc_path = root / "TransmogResizer.toc"
+    toc_path = root / "BetterTransmog.toc"
     if not toc_path.exists():
         return "0.0.0"
 

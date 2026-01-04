@@ -2,7 +2,7 @@
 local LibRu = _G["LibRu"]
 
 if not LibRu then
-    error("LibRu is required to initialize TransmogResize. Please ensure LibRu is loaded before TransmogResize.lua")
+    error("LibRu is required to initialize BetterTransmog. Please ensure LibRu is loaded before BetterTransmog.lua")
 end
 
 local MAX_ROWS = 5

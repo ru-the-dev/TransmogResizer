@@ -1,6 +1,6 @@
-# TransmogResizer
+# BetterTransmog
 
-**TransmogResizer** is a World of Warcraft addon that enhances the default Transmogrification frame by allowing you to dynamically resize it. Enjoy a more flexible and customizable transmog experience!
+**BetterTransmog** is a World of Warcraft addon that enhances the default Transmogrification frame by allowing you to dynamically resize it. Enjoy a more flexible and customizable transmog experience!
 
 ## Features
 

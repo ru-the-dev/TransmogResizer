@@ -1,15 +1,15 @@
 ## Interface: 110207
-## Title: TransmogResizer
+## Title: BetterTransmog
 ## Version: 1.0.1
 ## Author: ru_the_dev (Pookie)
 ## Notes: Allows resizing of the Transmog and Collection frames.
 ## DefaultState: Enabled
 ## LoadOnDemand: 0
-## X-Category: Transmorgrification
-## IconTexture: Interface\AddOns\TransmogResizer\Assets\logo
+## X-Category: Transmog
+## IconTexture: Interface\AddOns\BetterTransmog\Assets\logo
 ## Dependencies: Blizzard_Collections
 
-## SavedVariables: TransmogResizerAccountDB
+## SavedVariables: BetterTransmogAccountDB
 
 LibRu/Load.xml
 
@@ -17,5 +17,7 @@ Initialize.lua
 Database/AccountDB.lua
 
 Settings.lua
-## TransmogResize.lua
+## BetterTransmog.lua
 ##CollectionFrame.lua
+
+TransmogModelScene.lua
