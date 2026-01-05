@@ -54,6 +54,15 @@ def copy_tree(src: Path, dst: Path) -> None:
         else:
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(item, target)
+            
+            # Ensure debug mode is disabled in Initialize.lua
+            if item.name == "Initialize.lua":
+                content = target.read_text(encoding="utf-8")
+                content = content.replace(
+                    "_G.BetterTransmog.Debug = true;",
+                    "_G.BetterTransmog.Debug = false;"
+                )
+                target.write_text(content, encoding="utf-8")
 
 
 def package_target(target_path: Path, archive_name: str, dist_dir: Path, version: str) -> None:
@@ -69,8 +78,8 @@ def package_target(target_path: Path, archive_name: str, dist_dir: Path, version
     copy_tree(src, temp_dir)
 
     zip_path = dist_dir / f"{archive_name}.{version}"
-    archive = shutil.make_archive(str(zip_path), "zip", temp_dir)
-    shutil.rmtree(temp_dir)
+    archive = shutil.make_archive(str(zip_path), "zip", temp_dir.parent, archive_name)
+    shutil.rmtree(temp_dir.parent)
     print(f"Created {archive}")
 
 
