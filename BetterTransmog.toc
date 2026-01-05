@@ -18,6 +18,8 @@ Database/AccountDB.lua
 
 Frames/WardrobeFrame.lua
 Frames/WardrobeTransmogFrame.lua
+Frames/WardrobeItemsCollectionFrame.lua
+Frames/WardrobeSetsTransmogFrame.lua
 Frames/WardrobeCollectionFrame.lua
 
 Settings.lua
