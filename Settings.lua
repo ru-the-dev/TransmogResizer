@@ -8,6 +8,33 @@ if not LibRu then
     error("LibRu is required to initialize BetterTransmog. Please ensure LibRu is loaded before BetterTransmog.lua")
 end
 
+-- Track if a reload dialog is already shown
+local reloadDialogShown = false
+
+--- Shows a dialog prompting the user to reload the UI
+local function ShowReloadDialog()
+    if reloadDialogShown then return end
+    reloadDialogShown = true
+    
+    StaticPopup_Show("BETTERTRANSMOG_RELOAD_UI")
+end
+
+--- Register the reload UI popup
+StaticPopupDialogs["BETTERTRANSMOG_RELOAD_UI"] = {
+    text = "BetterTransmog settings have been changed. Reload the UI now to apply your changes?",
+    button1 = "Reload",
+    button2 = "Later",
+    OnAccept = function()
+        ReloadUI()
+    end,
+    OnCancel = function()
+        reloadDialogShown = false
+    end,
+    timeout = 0,
+    whileDead = true,
+    hideOnEscape = true,
+}
+
 
 local function BuildPanel()
     local panel = CreateFrame("Frame", "BetterTransmogOptionsPanel", UIParent)
@@ -25,12 +52,21 @@ local function BuildPanel()
 
     local s1 = LibRu.Frames.ValueSlider.New(panel, "BetterTransmog_Slider_ModelWidth", "Model Width (% of frame):", 30, 50, 1, _G.BetterTransmog.DB.Account.TransmogFrame, "CharacterModelWidthPercent", function(v) return v .. "%" end)
     s1:SetPoint("TOPLEFT", subtitle, "BOTTOMLEFT", 0, -verticalSpacing)
+    s1:AddScript("OnValueChanged", function(self, handle, newValue)
+        ShowReloadDialog()
+    end)
 
     local s2 = LibRu.Frames.ValueSlider.New(panel, "BetterTransmog_Slider_CollectionGrid", "Collection Grid Models:", 18, 50, 1, _G.BetterTransmog.DB.Account.TransmogFrame, "CollectionFrameModels")
     s2:SetPoint("TOPLEFT", s1, "BOTTOMLEFT", 0, -verticalSpacing)
+    s2:AddScript("OnValueChanged", function(self, handle, newValue)
+        ShowReloadDialog()
+    end)
 
     local s3 = LibRu.Frames.ValueSlider.New(panel, "BetterTransmog_Slider_SetGrid", "Set Grid Models:", 8, 18, 1, _G.BetterTransmog.DB.Account.TransmogFrame, "SetFrameModels")
     s3:SetPoint("TOPLEFT", s2, "BOTTOMLEFT", 0, -verticalSpacing)
+    s3:AddScript("OnValueChanged", function(self, handle, newValue)
+        ShowReloadDialog()
+    end)
 
     local resetButton = CreateFrame("Button", "BetterTransmog_ResetButton", panel, "GameMenuButtonTemplate")
     resetButton:SetPoint("TOPLEFT", s3, "BOTTOMLEFT", 0, -verticalSpacing)
