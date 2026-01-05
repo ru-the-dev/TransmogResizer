@@ -43,15 +43,3 @@ function WardrobeCollectionFrame:SetContainer(parent)
     
     self:Show()
 end
-
-local ItemsModule = _G.BetterTransmog.Frames and _G.BetterTransmog.Frames.WardrobeItemsCollectionFrame
-local SetsModule = _G.BetterTransmog.Frames and _G.BetterTransmog.Frames.WardrobeSetsTransmogFrame
-local eventFrame = _G.BetterTransmog.EventFrame
-
-if ItemsModule then
-    ItemsModule:Init(WardrobeCollectionFrame.ItemsCollectionFrame, WardrobeCollectionFrame, eventFrame)
-end
-
-if SetsModule then
-    SetsModule:Init(WardrobeCollectionFrame.SetsTransmogFrame, WardrobeCollectionFrame, eventFrame)
-end
