@@ -13,7 +13,7 @@ end
 WardrobeFrame = LibRu.Frames.EventFrame.New(WardrobeFrame);
 
 -- enable resizing
-LibRu.CreateResizeButton(WardrobeFrame, WardrobeFrame, 32);
+WardrobeFrame.ResizeButton = LibRu.Frames.ResizeButton.New(WardrobeFrame, WardrobeFrame, 32);
 
 WardrobeFrame:SetResizeBounds(885, 525);
 

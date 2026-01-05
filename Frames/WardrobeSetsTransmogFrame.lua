@@ -59,29 +59,28 @@ local function CalculateSetsGridLayout(setsFrame)
     local maxModels = _G.BetterTransmog.DB.Account.TransmogFrame.SetFrameModels
     local modelWidth = setsFrame.Models[1]:GetWidth()
     local modelHeight = setsFrame.Models[1]:GetHeight()
+
+    -- Calculate available space after accounting for padding
     local availableWidth = setsFrame:GetWidth() - GRID_CONFIG.paddingX
     local availableHeight = setsFrame:GetHeight() - GRID_CONFIG.paddingY
 
-    -- Calculate number of columns and rows based on available space
-    local cols = math.floor(availableWidth / (modelWidth + GRID_CONFIG.modelSpacingX))
-    local rows = math.ceil(maxModels / cols)
+    -- Calculate how many models fit in available space
+    local maxCols = math.floor((availableWidth + GRID_CONFIG.modelSpacingX) / (modelWidth + GRID_CONFIG.modelSpacingX))
+    local maxRows = math.floor((availableHeight + GRID_CONFIG.modelSpacingY) / (modelHeight + GRID_CONFIG.modelSpacingY))
 
-    -- Ensure we don't exceed the available height
-    if rows * (modelHeight + GRID_CONFIG.modelSpacingY) > availableHeight then
-        rows = math.floor(availableHeight / (modelHeight + GRID_CONFIG.modelSpacingY))
-        cols = math.ceil(maxModels / rows)
-    end
+    -- Ensure at least 1 row and 1 column
+    maxCols = math.max(maxCols, 1)
+    maxRows = math.max(maxRows, 1)
+
+    -- Limit to the user's max models setting
+    local cols = math.min(maxCols, maxModels)
+    local rows = math.min(maxRows, math.ceil(maxModels / cols))
 
     return rows, cols
 end
 
---- Positions all set models in a responsive grid layout and updates frame properties.
---- This function:
---- 1. Calculates the optimal grid layout
---- 2. Hides all models, then shows and positions only those that fit
---- 3. Updates frame properties (PAGE_SIZE, NUM_ROWS, NUM_COLS)
---- 4. Updates pagination to reflect the new layout
---- 5. Triggers visual refresh and model reloads
+--- Repositions models in a grid layout based on available space.
+--- Only handles geometric positioning, does not refresh visuals or pagination.
 --- @param setsFrame Frame The SetsTransmogFrame to position models in
 local function PositionSets(setsFrame)
     if not setsFrame or not setsFrame.Models then return end
@@ -124,6 +123,15 @@ local function PositionSets(setsFrame)
     setsFrame.PAGE_SIZE = totalVisible
     setsFrame.NUM_ROWS = rows
     setsFrame.NUM_COLS = cols
+end
+
+--- Refreshes visuals, pagination, and model data after positioning.
+--- Call this after PositionSets to update the UI with new set data.
+--- @param setsFrame Frame The SetsTransmogFrame to refresh
+local function RefreshSets(setsFrame)
+    if not setsFrame or not setsFrame.Models then return end
+
+    local totalVisible = setsFrame.PAGE_SIZE or 8
 
     -- Update pagination to reflect new page size
     if setsFrame.PagingFrame then
@@ -181,16 +189,35 @@ eventFrame:AddScript("OnAccountDBInitialized", function(self, handle)
     
     -- Create any additional set models needed based on user settings
     CreateAdditionalSets(setsFrame)
-
-    -- Hook into the frame's OnSizeChanged to reposition sets when resized
+    
+    -- Hook into frame resize for quick repositioning during drag
     setsFrame:HookScript("OnSizeChanged", function()
+        PositionSets(setsFrame)  -- Just reposition, no visual refresh
+    end)
+    
+    -- Hook into resize button to do full refresh when resize completes
+    ---@type ResizeButton
+    local resizeButton = WardrobeFrame.ResizeButton;
+    if resizeButton then
+        resizeButton:AddScript("OnMouseUp", function(self, handle)
+            _G.BetterTransmog.DebugLog("Resize complete, refreshing sets.")
+            if setsFrame:IsVisible() then
+                RefreshSets(setsFrame)
+            end
+        end)
+    end
+    
+    -- Reposition and refresh sets when frame becomes visible
+    setsFrame:HookScript("OnShow", function()
         PositionSets(setsFrame)
+        RefreshSets(setsFrame)
     end)
 
-    -- if the frame is already shown, position sets immediately
+    -- If frame is already visible, trigger initial positioning and refresh
     if setsFrame:IsVisible() then
         C_Timer.After(0.5, function()
             PositionSets(setsFrame)
+            RefreshSets(setsFrame)
         end)
     end
 

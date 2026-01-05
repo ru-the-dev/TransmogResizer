@@ -19,7 +19,9 @@ local DEFAULTS = {
 local AccountDB = NewDatabase("BetterTransmogAccountDB", DEFAULTS)
 
 -- Ensure DB is populated with all needed fields on ADDON_LOADED
-_G.BetterTransmog.EventFrame:AddEvent("ADDON_LOADED", function(handle, event, name)
+_G.BetterTransmog.EventFrame:AddEvent("ADDON_LOADED", function(self, handle, event, name)
+    print("ADDON_LOADED fired for", name)
+    
     if name == "BetterTransmog" then
         -- Initialize the AccountDB
         local db = AccountDB:Init()
