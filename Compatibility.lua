@@ -69,12 +69,4 @@ local function CheckCompatibility()
     end
 end
 
-local listener = CreateFrame("Frame")
-listener:RegisterEvent("ADDON_LOADED")
-listener:SetScript("OnEvent", function(_, addonName)
-    if addonName == "BetterWardrobe" then
-        CheckCompatibility()
-    end
-end)
-
 CheckCompatibility()
