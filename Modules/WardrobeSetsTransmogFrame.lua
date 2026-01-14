@@ -196,7 +196,7 @@ eventFrame:AddScript("OnAccountDBInitialized", function(self, handle)
     end)
     
     -- Hook into resize button to do full refresh when resize completes
-    ---@type ResizeButton
+    ---@type LibRu.Frames.ResizeButton
     local resizeButton = WardrobeFrame.ResizeButton;
     if resizeButton then
         resizeButton:AddScript("OnMouseUp", function(self, handle)

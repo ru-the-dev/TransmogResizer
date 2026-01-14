@@ -7,18 +7,12 @@ local function IsBetterWardrobeLoaded()
         return C_AddOns.IsAddOnLoaded("BetterWardrobe")
     end
 
-    if IsAddOnLoaded then
-        return IsAddOnLoaded("BetterWardrobe")
-    end
-
     return false
 end
 
 local function DisableBetterWardrobeAndReload()
     if C_AddOns and C_AddOns.DisableAddOn then
         C_AddOns.DisableAddOn("BetterWardrobe")
-    elseif DisableAddOn then
-        DisableAddOn("BetterWardrobe")
     end
 
     ReloadUI()

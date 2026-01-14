@@ -38,7 +38,7 @@ local function CreateAdditionalModels(itemsFrame)
     for i = currentModels + 1, maxModels do
         local model = CreateFrame("DressUpModel", "$parentCustomModel" .. i, itemsFrame, "WardrobeItemsModelTemplate")
         itemsFrame.Models[i] = model
-        Mixin(model, WardrobeItemsModelMixin)  -- Give it the same behavior as Blizzard's models
+        model = Mixin(model, WardrobeItemsModelMixin)  -- Give it the same behavior as Blizzard's models
         model:OnLoad()
         model:Hide()  -- Start hidden, will be shown/positioned by PositionModels
     end

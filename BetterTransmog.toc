@@ -1,4 +1,4 @@
-## Interface: 110207
+## Interface: 110207, 120000, 120001
 ## Title: BetterTransmog
 ## Version: 1.1.1
 ## Author: ru_the_dev (Pookie)
@@ -14,17 +14,20 @@
 
 LibRu/Load.xml
 
-Initialize.lua
-Compatibility.lua
-Database/AccountDB.lua
+Core.lua
+## Compatibility.lua
 
-Frames/WardrobeFrame.lua
-Frames/WardrobeTransmogFrame.lua
-Frames/WardrobeItemsCollectionFrame.lua
-Frames/WardrobeSetsTransmogFrame.lua
-Frames/WardrobeCollectionFrame.lua
+Modules/AccountDB.lua
+Modules/TransmogFrame.lua
+Modules/Settings.lua
+## Frames/OutfitCollectionsFrame.lua
 
-Settings.lua
+## Frames/WardrobeTransmogFrame.lua
+## Frames/WardrobeItemsCollectionFrame.lua
+## Frames/WardrobeSetsTransmogFrame.lua
+## Frames/WardrobeCollectionFrame.lua
+
+
 ## BetterTransmog.lua
 
 ## TransmogModelScene.lua
