@@ -6,5 +6,6 @@
     <Script file="Resizing.lua"/>
     <Script file="CharacterPreview.lua"/>
     <Script file="CollectionLayout.lua"/>
+    <Script file="OutfitCollection.lua"/>
     
 </Ui>

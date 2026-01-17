@@ -35,8 +35,6 @@ TransmogFrameModule.CollectionLayout = Module;
 -- Module Implementation
 -- =======================================================
 
-
-
 local function GetFirstVisibleElementFrame(view)
     for _, child in ipairs({ view:GetChildren() }) do
         if child:IsShown()
@@ -128,6 +126,7 @@ local function UpdateActiveTabLayout()
         end
     end
 end
+
 
 local function ApplyChanges()
     Module:DebugLog("Applying changes.")

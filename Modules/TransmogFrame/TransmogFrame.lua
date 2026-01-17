@@ -32,4 +32,5 @@ function Module:OnInitialize()
     Module.Resizing:Initialize();
     Module.CharacterPreview:Initialize();
     Module.CollectionLayout:Initialize();
+    Module.OutfitCollection:Initialize();
 end
