@@ -8,29 +8,31 @@ if not Core then
     return
 end
 
-Core.Modules = Core.Modules or {}
+Core.Modules = Core.Modules or {};
 
 
-local Module = {}
-
-Core.Modules.AccountDBModule = Module;
+---@class BetterTransmog.Modules.AccountDB : LibRu.Module
+local Module = Core.LibRu.Module.New("AccountDB");
+Core.Modules.AccountDB = Module;
 
 local DEFAULTS = {
     TransmogFrame = {
-        Size = {
-            Width  = 965,
-            Height = 606,
-        },
-        CharacterModelWidthPercent = 40,
-        CollectionFrameModels      = 30,
-        SetFrameModels             = 12,
+        CharacterPreviewFrameWidth = 658,
+        FramePosition = {
+            Point = "CENTER",
+            RelativeTo = "UIParent",
+            RelativePoint = "CENTER",
+            OffsetX = 0,
+            OffsetY = 0,
+        }
     }
 }
 
-function Module:Initialize()
+function Module:OnInitialize()
     local AccountDB = Core.LibRu.Utils.DB.CreateDatabase("BetterTransmogAccountDB", DEFAULTS)
     AccountDB:Init();
 
-    Core.DB = Core.DB or {}
-    Core.DB.Account = AccountDB  -- API methods (Init/Get/ResetAll/ResetSection/ResetValue)
+    Module.DB = AccountDB;
+
+    self:DebugLog("AccountDB initialized.");
 end

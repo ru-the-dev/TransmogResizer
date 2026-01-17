@@ -6,11 +6,19 @@ if not Core then
     return
 end
 
-Core.Modules = Core.Modules or {}
+Core.Modules = Core.Modules or {};
+
+if not Core.Modules.AccountDB then
+    error("Settings module requires AccountDB module to be loaded first.")
+    return
+end
+
+---@class BetterTransmog.Modules.Settings : LibRu.Module
+local Module = Core.LibRu.Module.New("Settings");
+
+Core.Modules.Settings = Module;
 
 
-local Module = {}
-Core.Modules.SettingsModule = Module;
 
 -- Track if a reload dialog is already shown
 local reloadDialogShown = false
@@ -41,8 +49,10 @@ StaticPopupDialogs["BETTERTRANSMOG_RELOAD_UI"] = {
 
 
 local function BuildPanel()
+    local accountDB = Core.Modules.AccountDB.DB;
+    local characterPreviewModule = Core.Modules.TransmogFrame.CharacterPreview;
+
     local panel = CreateFrame("Frame", "BetterTransmogOptionsPanel", UIParent)
-    local accountDB = Core.DB.Account;
 
     panel.name = Core.ADDON_NAME
 
@@ -56,26 +66,15 @@ local function BuildPanel()
     subtitle:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -8)
     subtitle:SetText("Adjust layout and item grid sizes.")
 
-    local s1 = Core.LibRu.Frames.ValueSlider.New(panel, "BetterTransmog_Slider_ModelWidth", "Model Width (% of frame):", 30, 50, 1, accountDB.TransmogFrame, "CharacterModelWidthPercent", function(v) return v .. "%" end)
-    s1:SetPoint("TOPLEFT", subtitle, "BOTTOMLEFT", 0, -verticalSpacing)
-    s1:AddScript("OnValueChanged", function(self, handle, newValue)
+    local previewFrameWidthSlider = Core.LibRu.Frames.ValueSlider.New(panel, "BetterTransmog_Slider_PreviewFrameWidth", "Preview Frame Width:", characterPreviewModule.Settings.MinFrameWidth, characterPreviewModule.Settings.MaxFrameWidth, 10, accountDB.TransmogFrame, "CharacterPreviewFrameWidth", function(v) return v .. "px" end)
+    previewFrameWidthSlider:SetPoint("TOPLEFT", subtitle, "BOTTOMLEFT", 0, -verticalSpacing)
+    previewFrameWidthSlider:AddScript("OnValueChanged", function(self, handle, newValue)
         ShowReloadDialog()
     end)
 
-    local s2 = Core.LibRu.Frames.ValueSlider.New(panel, "BetterTransmog_Slider_CollectionGrid", "Collection Grid Models:", 18, 50, 1, accountDB.TransmogFrame, "CollectionFrameModels")
-    s2:SetPoint("TOPLEFT", s1, "BOTTOMLEFT", 0, -verticalSpacing)
-    s2:AddScript("OnValueChanged", function(self, handle, newValue)
-        ShowReloadDialog()
-    end)
-
-    local s3 = Core.LibRu.Frames.ValueSlider.New(panel, "BetterTransmog_Slider_SetGrid", "Set Grid Models:", 8, 18, 1, accountDB.TransmogFrame, "SetFrameModels")
-    s3:SetPoint("TOPLEFT", s2, "BOTTOMLEFT", 0, -verticalSpacing)
-    s3:AddScript("OnValueChanged", function(self, handle, newValue)
-        ShowReloadDialog()
-    end)
 
     local resetButton = CreateFrame("Button", "BetterTransmog_ResetButton", panel, "GameMenuButtonTemplate")
-    resetButton:SetPoint("TOPLEFT", s3, "BOTTOMLEFT", 0, -verticalSpacing)
+    resetButton:SetPoint("TOPLEFT", previewFrameWidthSlider, "BOTTOMLEFT", 0, -verticalSpacing)
     resetButton:SetSize(100, 25)
     resetButton:SetText("Reset Settings")
     resetButton:SetScript("OnClick", function()
@@ -89,8 +88,7 @@ local function BuildPanel()
 end
 
 
-function Module:Initialize()
-    _G.BetterTransmog.DebugLog("BetterTransmog settings panel initialized.")
+function Module:OnInitialize()
     BuildPanel()
 end
 

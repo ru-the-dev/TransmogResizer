@@ -1,6 +1,6 @@
-## Interface: 110207, 120000, 120001
+## Interface: 120000, 120001
 ## Title: BetterTransmog
-## Version: 1.1.1
+## Version: 2.0.0
 ## Author: ru_the_dev (Pookie)
 ## Notes: Allows resizing of the Transmog and Collection frames.
 ## DefaultState: Enabled
@@ -15,19 +15,6 @@
 LibRu/Load.xml
 
 Core.lua
-## Compatibility.lua
-
 Modules/AccountDB.lua
-Modules/TransmogFrame.lua
+Modules/TransmogFrame/Load.xml
 Modules/Settings.lua
-## Frames/OutfitCollectionsFrame.lua
-
-## Frames/WardrobeTransmogFrame.lua
-## Frames/WardrobeItemsCollectionFrame.lua
-## Frames/WardrobeSetsTransmogFrame.lua
-## Frames/WardrobeCollectionFrame.lua
-
-
-## BetterTransmog.lua
-
-## TransmogModelScene.lua
