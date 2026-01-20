@@ -6,7 +6,7 @@
 local Core = _G.BetterTransmog;
 
 if not Core then
-    error("BetterTransmog must be initialized before TransmogModelScene.lua. Please ensure Initialize.lua is loaded first.")
+    error("BetterTransmog must be initialized. Please ensure Core.lua is loaded first.")
     return
 end
 
@@ -91,6 +91,12 @@ local function ApplyChanges()
     CharacterPreviewFrame_HookReset();
     CharacterPreviewFrame_FixCamera();
     CharacterPreviewFrame_UpdateWidth();
+
+
+    -- hook on show, fix camera every time, show resets the camera settings
+    _G.TransmogFrame:HookScript("OnShow", function(self)
+        CharacterPreviewFrame_FixCamera();
+    end)
 
 end
 
