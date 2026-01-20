@@ -34,8 +34,11 @@ TransmogFrameModule.OutfitCollection = Module;
 -- =======================================================
 -- Module Implementation
 -- =======================================================
+
+local outfitCollectionCollapseButton = nil;
+
 local function AddCollapseButton()
-    local collapseButton = Core.LibRu.Frames.CollapseExtendCheckButton.New(
+    outfitCollectionCollapseButton = Core.LibRu.Frames.CollapseExtendCheckButton.New(
         _G.TransmogFrame.CharacterPreview, 
         "OutfitCollectionCollapseExtendButton", 
         "bag-arrow", 
@@ -43,12 +46,12 @@ local function AddCollapseButton()
         true
     );
 
-    _G.TransmogFrame.CharacterPreview.OutfitCollectionCollapseButton = collapseButton;
+    _G.TransmogFrame.CharacterPreview.OutfitCollectionCollapseButton = outfitCollectionCollapseButton;
 
-    collapseButton:SetPoint("TOPLEFT", collapseButton:GetParent(), "TOPLEFT", 5, -70)
-    collapseButton:SetFrameStrata("DIALOG")
+    outfitCollectionCollapseButton:SetPoint("TOPLEFT", outfitCollectionCollapseButton:GetParent(), "TOPLEFT", 5, -70)
+    outfitCollectionCollapseButton:SetFrameStrata("DIALOG")
 
-    collapseButton:AddScript("OnClick", function (self)
+    outfitCollectionCollapseButton:AddScript("OnClick", function (self)
         local checked = self:GetChecked();
         local outfitCollectionFrame = _G.TransmogFrame.OutfitCollection;
         
@@ -64,8 +67,8 @@ end
 
 local function ApplyChanges()
     Module:DebugLog("Applying changes.")
-    AddCollapseButton();
 
+    AddCollapseButton();
 end
 
 function Module:OnInitialize()
