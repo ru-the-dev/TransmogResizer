@@ -29,7 +29,10 @@ Module.Settings = {
     MaxFrameWidth = 900,
     MinCameraZoom = 2.5,
     MaxCameraZoom = 7.5,
+    DefaultCameraZoom = 5.0,
 }
+
+Module.IsResetCameraHooked = false;
 
 TransmogFrameModule.CharacterPreview = Module;
 
@@ -43,8 +46,26 @@ local function CharacterPreviewFrame_FixCamera()
     local modelScene = preview.ModelScene
     local camera = modelScene:GetActiveCamera();
 
+
     camera:SetMinZoomDistance(Module.Settings.MinCameraZoom); 
     camera:SetMaxZoomDistance(Module.Settings.MaxCameraZoom);
+
+    -- Set the current zoom to a reasonable default
+    camera:SetZoomDistance(Module.Settings.DefaultCameraZoom);
+end
+
+local function CharacterPreviewFrame_HookReset()
+    if Module.IsResetCameraHooked then return end;
+
+    -- Hook the Reset method to reapply camera settings after reset
+    local preview = _G.TransmogFrame.CharacterPreview
+    local modelScene = preview.ModelScene
+
+    hooksecurefunc(modelScene, "Reset", function()
+        CharacterPreviewFrame_FixCamera()
+    end)
+
+    Module.IsResetCameraHooked = true;
 end
 
 local function CharacterPreviewFrame_UpdateWidth()
@@ -67,7 +88,7 @@ end
 local function ApplyChanges()
     Module:DebugLog("Applying changes.")
 
-
+    CharacterPreviewFrame_HookReset();
     CharacterPreviewFrame_FixCamera();
     CharacterPreviewFrame_UpdateWidth();
 
