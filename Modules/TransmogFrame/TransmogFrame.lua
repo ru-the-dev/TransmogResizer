@@ -29,9 +29,9 @@ function Module:OnInitialize()
     -- initialize sub-modules
     Module.Anchor:Initialize();
     Module.Positioning:Initialize();
-    Module.Resizing:Initialize();
     Module.CharacterPreview:Initialize();
     Module.CollectionLayout:Initialize();
     Module.OutfitCollection:Initialize();
+    Module.Resizing:Initialize();
     Module.SettingsButton:Initialize();
 end
