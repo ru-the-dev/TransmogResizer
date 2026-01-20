@@ -33,4 +33,5 @@ function Module:OnInitialize()
     Module.CharacterPreview:Initialize();
     Module.CollectionLayout:Initialize();
     Module.OutfitCollection:Initialize();
+    Module.SettingsButton:Initialize();
 end

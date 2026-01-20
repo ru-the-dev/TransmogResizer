@@ -82,11 +82,16 @@ local function BuildPanel()
         ReloadUI()
     end)
 
-
-    local category = Settings.RegisterCanvasLayoutCategory(panel, panel.name)
-    Settings.RegisterAddOnCategory(category)
+    
+    Module.SettingsCategory = Settings.RegisterCanvasLayoutCategory(panel, panel.name)
+    Settings.RegisterAddOnCategory(Module.SettingsCategory)
 end
 
+
+function Module:OpenSettingsFrame()
+    print("Opening BetterTransmog Settings Frame with id " .. tostring(Module.SettingsCategory:GetID()))
+    --Settings:OpenToCategory()
+end
 
 function Module:OnInitialize()
     BuildPanel()

@@ -7,5 +7,5 @@
     <Script file="CharacterPreview.lua"/>
     <Script file="CollectionLayout.lua"/>
     <Script file="OutfitCollection.lua"/>
-    
+    <Script file="SettingsButton.lua"/>
 </Ui>
