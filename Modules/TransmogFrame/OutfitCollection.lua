@@ -34,23 +34,7 @@ TransmogFrameModule.OutfitCollection = Module;
 -- =======================================================
 -- Module Implementation
 -- =======================================================
-
--- Toggle function
-local function TogglePanel()
-    -- button.isCollapsed = not button.isCollapsed
-    -- if button.isCollapsed then
-    --     panelFrame:SetHeight(30)  -- Collapsed height (e.g., header only)
-    --     button.texture:SetTexCoord(0, 0.5, 0, 1)  -- Rotate or change texture for expand state
-    -- else
-    --     panelFrame:SetHeight(200)  -- Expanded height
-    --     button.texture:SetTexCoord(0.5, 1, 0, 1)  -- Original texture for collapse state
-    -- end
-end
-
 local function AddCollapseButton()
-
-    
-
     local collapseButton = Core.LibRu.Frames.CollapseExtendCheckButton.New(
         _G.TransmogFrame.CharacterPreview, 
         "OutfitCollectionCollapseExtendButton", 
@@ -61,7 +45,7 @@ local function AddCollapseButton()
 
     _G.TransmogFrame.CharacterPreview.OutfitCollectionCollapseButton = collapseButton;
 
-    collapseButton:SetPoint("TOPLEFT", collapseButton:GetParent(), "TOPLEFT", 5, -80)
+    collapseButton:SetPoint("TOPLEFT", collapseButton:GetParent(), "TOPLEFT", 5, -70)
     collapseButton:SetFrameStrata("DIALOG")
 
     collapseButton:AddScript("OnClick", function (self)

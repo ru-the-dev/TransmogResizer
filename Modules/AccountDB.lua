@@ -4,7 +4,7 @@
 local Core = _G.BetterTransmog;
 
 if not Core then
-    error("BetterTransmog must be initialized. Please ensure Core.lua is loaded first.")    return
+    error("BetterTransmog must be initialized. Please ensure Core.lua is loaded first.")
     return
 end
 
