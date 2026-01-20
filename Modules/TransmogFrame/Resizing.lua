@@ -35,11 +35,43 @@ TransmogFrameModule.Resizing = Module;
 -- =======================================================
 -- Module Implementation
 -- =======================================================
+
+local function RestoreSavedSize()
+    Module:DebugLog("Restoring TransmogFrame size from AccountDB.");
+    -- restore posizesition from account DB
+    local savedSize = Core.Modules.AccountDB.DB.TransmogFrame.FrameSize;
+
+    _G.TransmogFrame:SetSize(savedSize.Width, savedSize.Height)
+    
+end
+
+local function SaveFrameSize()
+    Module:DebugLog("Saving TransmogFrame size to AccountDB.");
+    
+    local width, height = _G.TransmogFrame:GetSize()
+
+
+    -- save size to account DB
+    local savedSize = Core.Modules.AccountDB.DB.TransmogFrame.FrameSize
+
+    savedSize.Width = width
+    savedSize.Height = height
+end
+
 local function ApplyChanges()
     Module:DebugLog("Applying changes.")
 
+    -- restore size for the first time opening
+    RestoreSavedSize();
 
-     local resizeButton = Core.LibRu.Frames.ResizeButton.New(
+    -- note: we don't have to restore size on show, as the frame retains its size while hidden
+
+    -- hook hide to save size
+    _G.TransmogFrame:HookScript("OnHide", function(self)
+        SaveFrameSize();
+    end)
+
+    local resizeButton = Core.LibRu.Frames.ResizeButton.New(
         _G.TransmogFrame,
         _G.TransmogFrame,
         30

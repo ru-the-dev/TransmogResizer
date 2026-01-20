@@ -24,6 +24,10 @@ local DEFAULTS = {
             RelativePoint = "CENTER",
             OffsetX = 0,
             OffsetY = 0,
+        },
+        FrameSize = {
+           Width = 700,
+           Height = 500,
         }
     }
 }
