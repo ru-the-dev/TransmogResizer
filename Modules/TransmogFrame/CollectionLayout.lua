@@ -25,7 +25,7 @@ end
 
 
 Module.Settings = {
-    MinFrameWidth = 440,
+    MinFrameWidth = 450,
 }
 
 TransmogFrameModule.CollectionLayout = Module;
@@ -131,12 +131,10 @@ end
 local function ApplyChanges()
     Module:DebugLog("Applying changes.")
 
-
-     -- hook size changed to update layout
+    -- hook size changed to update layout
     _G.TransmogFrame.WardrobeCollection:HookScript("OnSizeChanged", function()
         UpdateActiveTabLayout()
     end)
-
 end
 
 function Module:OnInitialize()
