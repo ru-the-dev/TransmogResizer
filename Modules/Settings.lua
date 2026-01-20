@@ -89,8 +89,7 @@ end
 
 
 function Module:OpenSettingsFrame()
-    print("Opening BetterTransmog Settings Frame with id " .. tostring(Module.SettingsCategory:GetID()))
-    --Settings:OpenToCategory()
+    Settings.OpenToCategory(Module.SettingsCategory:GetID())
 end
 
 function Module:OnInitialize()
