@@ -25,7 +25,11 @@ end
 
 
 Module.Settings = {
-
+    TransmogFrame = {
+        MinHeight = 667,
+        MinWidth = 1330,
+    }
+   
 }
 
 
@@ -35,6 +39,30 @@ TransmogFrameModule.Resizing = Module;
 -- =======================================================
 -- Module Implementation
 -- =======================================================
+
+local function SetResizeBounds()
+    Module:DebugLog("Setting TransmogFrame resize bounds.");
+
+    ---@type Frame
+    local transmogFrame = _G.TransmogFrame;
+
+
+    local CollectionLayoutModule = TransmogFrameModule.CollectionLayout;
+    local OutfitCollectionFrameModule = TransmogFrameModule.OutfitCollection;
+    
+    local minWidth;
+    
+    if CollectionLayoutModule and OutfitCollectionFrameModule then
+        local charPreviewWidth = transmogFrame.CharacterPreview:GetWidth();
+        -- calculate min width based on other modules' settings outfit collection + character preview + collection layout (min width)
+        minWidth = OutfitCollectionFrameModule.Settings.ExpandedWidth + charPreviewWidth + CollectionLayoutModule.Settings.MinFrameWidth
+    else 
+        -- fallback to our default
+        minWidth = Module.Settings.TransmogFrame.MinWidth;
+    end
+
+    transmogFrame:SetResizeBounds(minWidth, Module.Settings.TransmogFrame.MinHeight)
+end
 
 local function RestoreSavedSize()
     Module:DebugLog("Restoring TransmogFrame size from AccountDB.");
@@ -60,6 +88,9 @@ end
 
 local function ApplyChanges()
     Module:DebugLog("Applying changes.")
+
+    -- set transmog frame's resize bounds
+    SetResizeBounds();
 
     -- restore size for the first time opening
     RestoreSavedSize();

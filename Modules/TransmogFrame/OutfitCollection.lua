@@ -26,7 +26,7 @@ end
 
 
 Module.Settings = {
-
+    ExpandedWidth = 312,
 }
 
 TransmogFrameModule.OutfitCollection = Module;
@@ -56,7 +56,7 @@ local function AddCollapseButton()
             outfitCollectionFrame:SetWidth(0.1);      
             outfitCollectionFrame:Hide();
         else
-            outfitCollectionFrame:SetWidth(312);
+            outfitCollectionFrame:SetWidth(Module.Settings.ExpandedWidth);
             outfitCollectionFrame:Show();
         end
     end)

@@ -25,7 +25,7 @@ end
 
 
 Module.Settings = {
-
+    MinFrameWidth = 440,
 }
 
 TransmogFrameModule.CollectionLayout = Module;
