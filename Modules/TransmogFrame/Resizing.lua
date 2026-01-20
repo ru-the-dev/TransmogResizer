@@ -26,7 +26,7 @@ end
 
 Module.Settings = {
     TransmogFrame = {
-        MinHeight = 667,
+        MinHeight = 750,
         MinWidth = 1330,
     },
     SituationsTabMinWidth = 630
@@ -84,9 +84,11 @@ local function SetResizeBounds()
     if CollectionLayoutModule and outfitCollectionAndCharacterPreviewWidth then
         if isSituationsTabVisible then
             minWidth = outfitCollectionAndCharacterPreviewWidth + Module.Settings.SituationsTabMinWidth
+            Module:DebugLog("Situations tab is visible, setting min width to " .. tostring(minWidth))
         else
             -- calculate min width based on situations tab min width + outfit collection + character preview
             minWidth = outfitCollectionAndCharacterPreviewWidth + CollectionLayoutModule.Settings.MinFrameWidth
+            Module:DebugLog("Situations tab is not visible, setting min width to " .. tostring(minWidth))
         end
        
     else 
@@ -150,11 +152,7 @@ local function ApplyChanges()
     _G.TransmogFrame.WardrobeCollection.TabContent.SituationsFrame:HookScript("OnShow", function(self)
         Module:DebugLog("Situations tab shown, adjusting width if needed.")
         
-        if (self:GetWidth() < Module.Settings.SituationsTabMinWidth) then
-            Module:DebugLog("Situations tab width is less than minimum, adjusting collection frame width.")
-            SetCollectionFrameWidth(Module.Settings.SituationsTabMinWidth)
-            SetResizeBounds()
-        end
+        Module:UpdateSituationTabMinWidth();
     end)
 
     -- hook on situations show to adjust width if needed
@@ -173,4 +171,14 @@ function Module:OnInitialize()
             self:RemoveEvent(handle)
         end
     )
+end
+
+function Module:UpdateSituationTabMinWidth()
+    local situationsFrame = _G.TransmogFrame.WardrobeCollection.TabContent.SituationsFrame
+    
+    if (situationsFrame:GetWidth() < Module.Settings.SituationsTabMinWidth) then
+        Module:DebugLog("Situations tab width is less than minimum, adjusting collection frame width.")
+        SetCollectionFrameWidth(Module.Settings.SituationsTabMinWidth)
+    end
+    SetResizeBounds()
 end
