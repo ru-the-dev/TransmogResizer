@@ -51,7 +51,10 @@ end
 local function GetOneViewedPagedContentFrameLayoutSignature(pagedContentFrame)
     -- get the first view frame
     local view = pagedContentFrame.ViewFrames and pagedContentFrame.ViewFrames[1]
-    if not view then return nil end
+    if not view then 
+        Module:DebugLog("No view frame found on paged content frame.")
+        return nil
+    end
 
     -- check if there's no multiple views (we can add support for this later)
     if #pagedContentFrame.ViewFrames > 1 then
@@ -61,15 +64,24 @@ local function GetOneViewedPagedContentFrameLayoutSignature(pagedContentFrame)
 
     -- find the first visible element frame
     local element = GetFirstVisibleElementFrame(view)
-    if not element then return nil end
+    if not element then
+        Module:DebugLog("No visible element frame found in view.")
+        return nil
+    end
 
     -- get element dimensions
     local ew, eh = element:GetWidth(), element:GetHeight()
-    if ew <= 0 or eh <= 0 then return nil end
+    if ew <= 0 or eh <= 0 then
+        Module:DebugLog("Element has invalid dimensions: " .. tostring(ew) .. "x" .. tostring(eh))
+        return nil
+    end
 
     -- get view dimensions
     local vw, vh = view:GetWidth(), view:GetHeight()
-    if vw <= 0 or vh <= 0 then return nil end
+    if vw <= 0 or vh <= 0 then
+        Module:DebugLog("View has invalid dimensions: " .. tostring(vw) .. "x" .. tostring(vh))
+        return nil
+    end
 
     -- Horizontal stride (element + x padding)
     local xPadding = pagedContentFrame.xPadding or 0
@@ -114,14 +126,17 @@ local function UpdateActiveTabLayout()
 
             -- get the layout signature (rows x columns)
             local sig = GetOneViewedPagedContentFrameLayoutSignature(paged)
-            
+            Module:DebugLog("Calculated layout signature: " .. tostring(sig))
             -- if the signature has changed from the old layout, update layouts
             if sig and paged.BT_LayoutSignature ~= sig then
                 -- store new signature on the frame
-                paged.BT_LayoutSignature = sig
+                
 
+                Module:DebugLog("Layout signature changed to " .. sig .. ", updating layouts.")
                 -- update layouts
                 paged:UpdateLayouts()
+
+                paged.BT_LayoutSignature = sig
             end
         end
     end
@@ -133,7 +148,24 @@ local function ApplyChanges()
 
     -- hook size changed to update layout
     _G.TransmogFrame.WardrobeCollection:HookScript("OnSizeChanged", function()
-        UpdateActiveTabLayout()
+       UpdateActiveTabLayout();
+    end)
+
+
+    --- hook into tab changes to update remove layout signature to avoid stale layouts
+    hooksecurefunc(_G.TransmogFrame.WardrobeCollection.internalTabTracker, "SetTab", function(self, tabId)
+        -- get active tab elements
+        local tabElements = self:GetElementsForTab(tabId)
+
+        -- loop over elements
+        for _, element in ipairs(tabElements) do
+            -- if the element has paged content (AKA it's a PagedContentFrame)
+            if element.PagedContent then
+                local paged = element.PagedContent
+                -- clear old signature to force layout update on next size change
+                paged.BT_LayoutSignature = nil
+            end
+        end
     end)
 end
 
@@ -147,3 +179,4 @@ function Module:OnInitialize()
         end
     )
 end
+

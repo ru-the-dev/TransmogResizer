@@ -56,12 +56,12 @@ local function AddCollapseButton()
         local outfitCollectionFrame = _G.TransmogFrame.OutfitCollection;
         
         if (checked) then
-            outfitCollectionFrame:SetWidth(0.1);      
             outfitCollectionFrame:Hide();
+            outfitCollectionFrame:SetWidth(0.1);      
         else
             outfitCollectionFrame:SetWidth(Module.Settings.ExpandedWidth);
             outfitCollectionFrame:Show();
-        end
+        end        
     end)
 end
 
