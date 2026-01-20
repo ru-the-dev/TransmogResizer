@@ -28,7 +28,8 @@ Module.Settings = {
     TransmogFrame = {
         MinHeight = 667,
         MinWidth = 1330,
-    }
+    },
+    SituationsTabMinWidth = 630
    
 }
 
@@ -40,22 +41,54 @@ TransmogFrameModule.Resizing = Module;
 -- Module Implementation
 -- =======================================================
 
+
+
+--- gets the combined width of the expanded outfit collection frame, and character preview frame
+--- @return number|nil The combined width, or nil if outfit collection module is not loaded
+local function GetOutfitCollectionAndCharacterPreviewWidth()
+    local outfitCollectionFrameModule = TransmogFrameModule.OutfitCollection;
+
+    if outfitCollectionFrameModule == nil then return nil end
+
+    return outfitCollectionFrameModule.Settings.ExpandedWidth + _G.TransmogFrame.CharacterPreview:GetWidth()
+end
+
+local function SetCollectionFrameWidth(collectionFrameWidth)
+    Module:DebugLog("Setting TransmogFrame collection frame width to " .. tostring(collectionFrameWidth))
+
+    local outfitCollectionAndCharacterPreviewWidth = GetOutfitCollectionAndCharacterPreviewWidth();
+
+    if outfitCollectionAndCharacterPreviewWidth == nil then
+        error("OutfitCollection module not loaded, cannot set collection frame width.");
+        return;
+    end
+
+    ---@type Frame
+    local transmogFrame = _G.TransmogFrame;
+    transmogFrame:SetWidth(collectionFrameWidth + outfitCollectionAndCharacterPreviewWidth);
+end
+
+
 local function SetResizeBounds()
     Module:DebugLog("Setting TransmogFrame resize bounds.");
 
     ---@type Frame
     local transmogFrame = _G.TransmogFrame;
 
-
+    local isSituationsTabVisible = _G.TransmogFrame.WardrobeCollection.TabContent.SituationsFrame:IsShown();
     local CollectionLayoutModule = TransmogFrameModule.CollectionLayout;
-    local OutfitCollectionFrameModule = TransmogFrameModule.OutfitCollection;
-    
-    local minWidth;
-    
-    if CollectionLayoutModule and OutfitCollectionFrameModule then
-        local charPreviewWidth = transmogFrame.CharacterPreview:GetWidth();
-        -- calculate min width based on other modules' settings outfit collection + character preview + collection layout (min width)
-        minWidth = OutfitCollectionFrameModule.Settings.ExpandedWidth + charPreviewWidth + CollectionLayoutModule.Settings.MinFrameWidth
+    local outfitCollectionAndCharacterPreviewWidth = GetOutfitCollectionAndCharacterPreviewWidth();
+
+    local minWidth = 0;
+
+    if CollectionLayoutModule and outfitCollectionAndCharacterPreviewWidth then
+        if isSituationsTabVisible then
+            minWidth = outfitCollectionAndCharacterPreviewWidth + Module.Settings.SituationsTabMinWidth
+        else
+            -- calculate min width based on situations tab min width + outfit collection + character preview
+            minWidth = outfitCollectionAndCharacterPreviewWidth + CollectionLayoutModule.Settings.MinFrameWidth
+        end
+       
     else 
         -- fallback to our default
         minWidth = Module.Settings.TransmogFrame.MinWidth;
@@ -112,6 +145,23 @@ local function ApplyChanges()
 
     _G.TransmogFrame.ResizeButton = resizeButton
 
+
+    -- hook on situations show to adjust width if needed
+    _G.TransmogFrame.WardrobeCollection.TabContent.SituationsFrame:HookScript("OnShow", function(self)
+        Module:DebugLog("Situations tab shown, adjusting width if needed.")
+        
+        if (self:GetWidth() < Module.Settings.SituationsTabMinWidth) then
+            Module:DebugLog("Situations tab width is less than minimum, adjusting collection frame width.")
+            SetCollectionFrameWidth(Module.Settings.SituationsTabMinWidth)
+            SetResizeBounds()
+        end
+    end)
+
+    -- hook on situations show to adjust width if needed
+    _G.TransmogFrame.WardrobeCollection.TabContent.SituationsFrame:HookScript("OnHide", function(self)
+        Module:DebugLog("Situations tab shown, adjusting width if needed.")
+        SetResizeBounds()
+    end)
 end
 
 function Module:OnInitialize()
