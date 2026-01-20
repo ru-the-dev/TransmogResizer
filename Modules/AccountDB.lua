@@ -17,7 +17,7 @@ Core.Modules.AccountDB = Module;
 
 local DEFAULTS = {
     TransmogFrame = {
-        CharacterPreviewFrameWidth = 658,
+        CharacterPreviewFrameWidth = 450,
         FramePosition = {
             Point = "CENTER",
             RelativeTo = "UIParent",
@@ -26,8 +26,8 @@ local DEFAULTS = {
             OffsetY = 0,
         },
         FrameSize = {
-           Width = 700,
-           Height = 500,
+           Width = 1330,
+           Height = 667,
         }
     }
 }
