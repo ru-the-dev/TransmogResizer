@@ -2,7 +2,7 @@
 local Core = _G.BetterTransmog;
 
 if not Core then
-    error("BetterTransmog must be initialized before TransmogModelScene.lua. Please ensure Initialize.lua is loaded first.")
+    error("BetterTransmog must be initialized. Please ensure Core.lua is loaded first.")    return
     return
 end
 
@@ -64,7 +64,7 @@ local function BuildPanel()
 
     local subtitle = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlight")
     subtitle:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -8)
-    subtitle:SetText("Adjust layout and item grid sizes.")
+    subtitle:SetText("Adjust layout and behavior settings for BetterTransmog.")
 
     local previewFrameWidthSlider = Core.LibRu.Frames.ValueSlider.New(panel, "BetterTransmog_Slider_PreviewFrameWidth", "Preview Frame Width:", characterPreviewModule.Settings.MinFrameWidth, characterPreviewModule.Settings.MaxFrameWidth, 10, accountDB.TransmogFrame, "CharacterPreviewFrameWidth", function(v) return v .. "px" end)
     previewFrameWidthSlider:SetPoint("TOPLEFT", subtitle, "BOTTOMLEFT", 0, -verticalSpacing)
@@ -80,6 +80,28 @@ local function BuildPanel()
     resetButton:SetScript("OnClick", function()
         accountDB:ResetSection({ "TransmogFrame" })
         ReloadUI()
+    end)
+
+    local footer = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
+    footer:SetPoint("BOTTOMLEFT", panel, "BOTTOMLEFT", 16, 16)
+    footer:SetPoint("BOTTOMRIGHT", panel, "BOTTOMRIGHT", -16, 16)
+    footer:SetJustifyH("LEFT")
+    footer:SetJustifyV("BOTTOM")
+    footer:SetWordWrap(true)
+    footer:SetNonSpaceWrap(true)
+    -- Provide a reasonable default width; it'll be adjusted when the panel is sized
+    footer:SetWidth(400)
+    -- Set a pleasant base color for the footer text
+    footer:SetTextColor(0.78, 0.85, 0.95)
+    -- Increase font size for better readability
+    footer:SetFont(STANDARD_TEXT_FONT, 13)
+    -- Highlight the author name in a contrasting color using WoW color escape codes
+    local authorName = "|cff00ffd0ru_the_dev|r"
+    footer:SetText("Made with love by " .. authorName .. " (Pookie). Any feedback, feature suggestions, addon compatibility reports and donations are welcome <3")
+
+    -- Update the footer width whenever the panel size changes so wrapping works correctly
+    panel:HookScript("OnSizeChanged", function(self, width, height)
+        footer:SetWidth(math.max(100, width - 32))
     end)
 
     
