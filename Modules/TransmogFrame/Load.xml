@@ -1,0 +1,11 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\FrameXML\UI.xsd">
+    <Script file="TransmogFrame.lua"/>
+    <Script file="Anchor.lua"/>
+    <Script file="Positioning.lua"/>
+    <Script file="Resizing.lua"/>
+    <Script file="CharacterPreview.lua"/>
+    <Script file="CollectionLayout.lua"/>
+    <Script file="OutfitCollection.lua"/>
+    <Script file="SettingsButton.lua"/>
+</Ui>
