@@ -10,7 +10,7 @@ end
 local Core = {
     ADDON_NAME = "BetterTransmog",
     LibRu = LibRu,
-    Debug = true
+    Debug = false
 }
 
 -- Create a Global event frame
