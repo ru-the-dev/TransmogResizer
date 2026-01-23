@@ -59,7 +59,7 @@ local function BuildPanel()
 
     local panel = CreateFrame("Frame", "BetterTransmogOptionsPanel", UIParent)
 
-    panel.name = Core.ADDON_NAME
+    panel.name = Core.Name
 
     local verticalSpacing = 40;
 
