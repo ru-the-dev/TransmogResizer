@@ -7,29 +7,38 @@ if not LibRu then
 end
 
 ---@class BetterTransmog : LibRu.Module
-local Core = {
-    ADDON_NAME = "BetterTransmog",
-    LibRu = LibRu,
-    Debug = false
-}
+---@field Modules {AccountDB: BetterTransmog.Modules.AccountDB, Settings: BetterTransmog.Modules.Settings, TransmogFrame: BetterTransmog.Modules.TransmogFrame}
+local Core = LibRu.Module.New("BetterTransmog", nil, nil, true)
+
+-- Register LibRu in Core for easy access
+Core.Libs = {}
+Core.Libs.LibRu = LibRu;
+
+-- register default slash command
+Core:RegisterSlashCommand("/bettertransmog", {
+    ["default"] = function(msg, editbox)
+        Core:DebugLog("BetterTransmog default command executed: " .. tostring(msg) .. " | Editbox: " .. tostring(editbox))
+    end,
+})
+
+
+Core:RegisterSlashCommand("/rl", function (msg, editbox)
+    Core:DebugLog("ReloadUI command executed via BetterTransmog.")
+    ReloadUI()
+end)
+
 
 -- Create a Global event frame
 Core.EventFrame = LibRu.Frames.EventFrame.New(CreateFrame("Frame"));
 
-if Core.Debug then
-    Core.LibRu.Module.DebugFunc = function (message)
-        print("|cff9f7fff" .. Core.ADDON_NAME .. " [DEBUG]:|r " .. tostring(message))
-    end
-end
-
 Core.EventFrame:AddEvent("ADDON_LOADED", function (self, handle, event, addonName)
-    if addonName ~= Core.ADDON_NAME then return end
+    if addonName ~= Core:GetFullName() then return end
 
-    Core.Modules.AccountDB:Initialize();
-    Core.Modules.Settings:Initialize();
-    Core.Modules.TransmogFrame:Initialize();
+    --- Initialize the addon (core module and submodules)
+    Core:Initialize();
 
     self:RemoveEvent(handle);
 end)
 
 _G.BetterTransmog = Core;
+

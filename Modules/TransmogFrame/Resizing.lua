@@ -5,24 +5,25 @@
 ---@class BetterTransmog
 local Core = _G.BetterTransmog;
 
-if not Core then
-    error("BetterTransmog must be initialized. Please ensure Core.lua is loaded first.")
-    return
-end
-
 --- @class BetterTransmog.Modules.TransmogFrame.Resizing : LibRu.Module
-local Module = Core.LibRu.Module.New("TransmogFrame.Resizing");
+local Module = Core.Libs.LibRu.Module.New(
+    "Resizing", 
+    Core.Modules.TransmogFrame, 
+    { 
+        Core.Modules.TransmogFrame 
+    }
+);
 
-Core.Modules = Core.Modules or {};
+--- =======================================================
+--- Dependencies
+--- ======================================================
+---@type BetterTransmog.Modules.TransmogFrame
+local transmogFrameModule = Core.Modules.TransmogFrame;
 
----@class BetterTransmog.Modules.TransmogFrame: LibRu.Module
-local TransmogFrameModule = Core.Modules.TransmogFrame;
 
-if not TransmogFrameModule then
-    error(Module.Name .. " module requires TransmogFrame module to be loaded first.")
-    return;
-end
-
+--- =======================================================
+-- Module Settings
+-- =======================================================
 
 Module.Settings = {
     TransmogFrame = {
@@ -30,23 +31,18 @@ Module.Settings = {
         MinWidth = 1330,
     },
     SituationsTabMinWidth = 630
-   
 }
 
-
-TransmogFrameModule.Resizing = Module;
 
 
 -- =======================================================
 -- Module Implementation
 -- =======================================================
 
-
-
 --- gets the combined width of the expanded outfit collection frame, and character preview frame
 --- @return number|nil The combined width, or nil if outfit collection module is not loaded
 local function GetOutfitCollectionAndCharacterPreviewWidth()
-    local outfitCollectionFrameModule = TransmogFrameModule.OutfitCollection;
+    local outfitCollectionFrameModule = transmogFrameModule.OutfitCollection;
 
     if outfitCollectionFrameModule == nil then return nil end
 
@@ -76,7 +72,7 @@ local function SetResizeBounds()
     local transmogFrame = _G.TransmogFrame;
 
     local isSituationsTabVisible = _G.TransmogFrame.WardrobeCollection.TabContent.SituationsFrame:IsShown();
-    local CollectionLayoutModule = TransmogFrameModule.CollectionLayout;
+    local CollectionLayoutModule = transmogFrameModule.CollectionLayout;
     local outfitCollectionAndCharacterPreviewWidth = GetOutfitCollectionAndCharacterPreviewWidth();
 
     local minWidth = 0;
@@ -137,7 +133,7 @@ local function ApplyChanges()
         SaveFrameSize();
     end)
 
-    local resizeButton = Core.LibRu.Frames.ResizeButton.New(
+    local resizeButton = Core.Libs.LibRu.Frames.ResizeButton.New(
         _G.TransmogFrame,
         _G.TransmogFrame,
         30
@@ -166,7 +162,7 @@ function Module:OnInitialize()
     Core.EventFrame:AddEvent(
         "PLAYER_INTERACTION_MANAGER_FRAME_SHOW",
         function(self, handle, _, frameId)
-            if frameId ~= TransmogFrameModule.Settings.TRANSMOG_FRAME_ID then return end
+            if frameId ~= transmogFrameModule.Settings.TRANSMOG_FRAME_ID then return end
             ApplyChanges()
             self:RemoveEvent(handle)
         end

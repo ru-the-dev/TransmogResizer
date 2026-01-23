@@ -1,22 +1,28 @@
 ---@class BetterTransmog
 local Core = _G.BetterTransmog;
 
-if not Core then
-    error("BetterTransmog must be initialized. Please ensure Core.lua is loaded first.")
-    return
-end
-
-Core.Modules = Core.Modules or {};
-
-if not Core.Modules.AccountDB then
-    error("Settings module requires AccountDB module to be loaded first.")
-    return
-end
-
 ---@class BetterTransmog.Modules.Settings : LibRu.Module
-local Module = Core.LibRu.Module.New("Settings");
+local Module = Core.Libs.LibRu.Module.New(
+    "Settings", 
+    Core, 
+    { 
+        Core.Modules.AccountDB, 
+        Core.Modules.TransmogFrame.CharacterPreview 
+    } 
+)
 
-Core.Modules.Settings = Module;
+--- ======================================================
+--- Dependencies
+--- ======================================================
+---@type BetterTransmog.Modules.AccountDB
+local accountDBModule = Core.Modules.AccountDB;
+
+---@type BetterTransmog.Modules.TransmogFrame.CharacterPreview
+local characterPreviewModule = Core.Modules.TransmogFrame.Modules.CharacterPreview;
+
+--- =======================================================
+--- Module Settings
+--- =======================================================;
 
 
 
@@ -49,8 +55,7 @@ StaticPopupDialogs["BETTERTRANSMOG_RELOAD_UI"] = {
 
 
 local function BuildPanel()
-    local accountDB = Core.Modules.AccountDB.DB;
-    local characterPreviewModule = Core.Modules.TransmogFrame.CharacterPreview;
+    local accountDB = accountDBModule.DB;
 
     local panel = CreateFrame("Frame", "BetterTransmogOptionsPanel", UIParent)
 
@@ -66,7 +71,7 @@ local function BuildPanel()
     subtitle:SetPoint("TOPLEFT", title, "BOTTOMLEFT", 0, -8)
     subtitle:SetText("Adjust layout and behavior settings for BetterTransmog.")
 
-    local previewFrameWidthSlider = Core.LibRu.Frames.ValueSlider.New(panel, "BetterTransmog_Slider_PreviewFrameWidth", "Preview Frame Width:", characterPreviewModule.Settings.MinFrameWidth, characterPreviewModule.Settings.MaxFrameWidth, 10, accountDB.TransmogFrame, "CharacterPreviewFrameWidth", function(v) return v .. "px" end)
+    local previewFrameWidthSlider = Core.Libs.LibRu.Frames.ValueSlider.New(panel, "BetterTransmog_Slider_PreviewFrameWidth", "Preview Frame Width:", characterPreviewModule.Settings.MinFrameWidth, characterPreviewModule.Settings.MaxFrameWidth, 10, accountDB.TransmogFrame, "CharacterPreviewFrameWidth", function(v) return v .. "px" end)
     previewFrameWidthSlider:SetPoint("TOPLEFT", subtitle, "BOTTOMLEFT", 0, -verticalSpacing)
     previewFrameWidthSlider:AddScript("OnValueChanged", function(self, handle, newValue)
         ShowReloadDialog()

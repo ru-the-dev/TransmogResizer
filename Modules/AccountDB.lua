@@ -3,19 +3,12 @@
 ---@class BetterTransmog
 local Core = _G.BetterTransmog;
 
-if not Core then
-    error("BetterTransmog must be initialized. Please ensure Core.lua is loaded first.")
-    return
-end
-
-Core.Modules = Core.Modules or {};
-
 
 ---@class BetterTransmog.Modules.AccountDB : LibRu.Module
-local Module = Core.LibRu.Module.New("AccountDB");
-Core.Modules.AccountDB = Module;
+local Module = Core.Libs.LibRu.Module.New("AccountDB", Core, { Core });
 
 local DEFAULTS = {
+    LastChangeLogVersion = "",
     TransmogFrame = {
         CharacterPreviewFrameWidth = 450,
         FramePosition = {
@@ -33,7 +26,7 @@ local DEFAULTS = {
 }
 
 function Module:OnInitialize()
-    local AccountDB = Core.LibRu.Utils.DB.CreateDatabase("BetterTransmogAccountDB", DEFAULTS)
+    local AccountDB = Core.Libs.LibRu.Utils.DB.CreateDatabase("BetterTransmogAccountDB", DEFAULTS)
     AccountDB:Init();
 
     Module.DB = AccountDB;
