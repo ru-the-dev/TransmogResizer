@@ -10,7 +10,7 @@ local Module = Core.Libs.LibRu.Module.New(
     "Resizing", 
     Core.Modules.TransmogFrame, 
     { 
-        Core.Modules.TransmogFrame 
+        Core.Modules.TransmogFrame
     }
 );
 
@@ -42,7 +42,7 @@ Module.Settings = {
 --- gets the combined width of the expanded outfit collection frame, and character preview frame
 --- @return number|nil The combined width, or nil if outfit collection module is not loaded
 local function GetOutfitCollectionAndCharacterPreviewWidth()
-    local outfitCollectionFrameModule = transmogFrameModule.OutfitCollection;
+    local outfitCollectionFrameModule = transmogFrameModule.Modules.OutfitCollection;
 
     if outfitCollectionFrameModule == nil then return nil end
 
@@ -72,18 +72,18 @@ local function SetResizeBounds()
     local transmogFrame = _G.TransmogFrame;
 
     local isSituationsTabVisible = _G.TransmogFrame.WardrobeCollection.TabContent.SituationsFrame:IsShown();
-    local CollectionLayoutModule = transmogFrameModule.CollectionLayout;
+    local collectionLayoutModule = transmogFrameModule.Modules.CollectionLayout;
     local outfitCollectionAndCharacterPreviewWidth = GetOutfitCollectionAndCharacterPreviewWidth();
 
     local minWidth = 0;
 
-    if CollectionLayoutModule and outfitCollectionAndCharacterPreviewWidth then
+    if collectionLayoutModule and outfitCollectionAndCharacterPreviewWidth then
         if isSituationsTabVisible then
             minWidth = outfitCollectionAndCharacterPreviewWidth + Module.Settings.SituationsTabMinWidth
             Module:DebugLog("Situations tab is visible, setting min width to " .. tostring(minWidth))
         else
             -- calculate min width based on situations tab min width + outfit collection + character preview
-            minWidth = outfitCollectionAndCharacterPreviewWidth + CollectionLayoutModule.Settings.MinFrameWidth
+            minWidth = outfitCollectionAndCharacterPreviewWidth + collectionLayoutModule.Settings.MinFrameWidth
             Module:DebugLog("Situations tab is not visible, setting min width to " .. tostring(minWidth))
         end
        
