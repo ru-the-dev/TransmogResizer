@@ -99,11 +99,9 @@ local function ShowChangeLog()
 end
 
 function Module:OnInitialize()
-    -- local accountDB = accountDBModule.DB
-    -- if accountDB.LastChangeLogVersion ~= CURRENT_VERSION then
-    --     ShowChangeLog()
-    -- end
-    -- just to debug
-    ShowChangeLog()
+    local accountDB = accountDBModule.DB
+    if accountDB.LastChangeLogVersion ~= CURRENT_VERSION then
+        ShowChangeLog()
+    end
 end
 
