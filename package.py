@@ -1,4 +1,5 @@
 import shutil
+import re
 from pathlib import Path
 
 # Addon folder to package relative to this script
@@ -56,12 +57,14 @@ def copy_tree(src: Path, dst: Path) -> None:
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(item, target)
             
-            # Ensure debug mode is disabled in Initialize.lua
-            if item.name == "Initialize.lua":
+            # Ensure debug mode is disabled in all Lua files
+            if item.name.endswith(".lua"):
                 content = target.read_text(encoding="utf-8")
-                content = content.replace(
-                    "_G.BetterTransmog.Debug = true;",
-                    "_G.BetterTransmog.Debug = false;"
+                # Replace LibRu.Module.New(..., true) with LibRu.Module.New(..., false)
+                content = re.sub(
+                    r'LibRu\.Module\.New\(([^,]+),\s*([^,]+),\s*([^,]+),\s*true\)',
+                    r'LibRu.Module.New(\1, \2, \3, false)',
+                    content
                 )
                 target.write_text(content, encoding="utf-8")
 
