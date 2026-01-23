@@ -20,3 +20,4 @@ Core.lua
 Modules/AccountDB.lua
 Modules/TransmogFrame/Load.xml
 Modules/Settings.lua
+Modules/ChangeLog.lua
