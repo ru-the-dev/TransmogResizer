@@ -23,6 +23,12 @@ local accountDBModule = Core.Modules.AccountDB;
 local CURRENT_VERSION = C_AddOns.GetAddOnMetadata(Core.Name, "Version")
 
 local CHANGELOG_TEXT = [[
+|cffffd100Version 2.0.3|r
+
+|cffffff00Fixed a bug causing a lua error in the Resizing Module|r
+
+|cffffd100--------------------------|r
+
 |cffffd100Version 2.0.2|r
 
 |cffffff00Upgraded Module System|r
@@ -31,8 +37,8 @@ local CHANGELOG_TEXT = [[
 |cffffff00Added ChangeLog Module|r
 |cff888888Introduced a new ChangeLog module that displays version updates to users upon addon load.|r
 
-|cffffff00Added Added a /rl command. |r
-|cff888888Added Added a shorthand way to /reload the ui with /rl (Request by F0ki & Jimbo) |r
+|cffffff00Added a /rl command. |r
+|cff888888Added a shorthand way to /reload the ui with /rl (Request by F0ki & Jimbo) |r
 
 
 |cffe34275Thank you so much for the positive reception to this new addon. Your feedback and feature requests are heard and expect these requested features soon! <3|r
