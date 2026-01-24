@@ -7,7 +7,7 @@ if not LibRu then
 end
 
 ---@class BetterTransmog : LibRu.Module
----@field Modules {AccountDB: BetterTransmog.Modules.AccountDB, Settings: BetterTransmog.Modules.Settings, TransmogFrame: BetterTransmog.Modules.TransmogFrame}
+---@field Modules {AccountDB: BetterTransmog.Modules.AccountDB, ChangeLog: BetterTransmog.Modules.ChangeLog, Settings: BetterTransmog.Modules.Settings, TransmogFrame: BetterTransmog.Modules.TransmogFrame}
 local Core = LibRu.Module.New("BetterTransmog", nil, nil, true)
 
 -- Register LibRu in Core for easy access
