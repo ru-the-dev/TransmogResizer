@@ -108,6 +108,11 @@ local function UpdateActiveTabLayout()
     -- get active tab ID
     local tabId = wardrobeCollectionFrame:GetTab()
 
+    if not tabId then
+        Module:DebugLog("No active tab ID found on WardrobeCollectionFrame.")
+        return
+    end
+
     -- get active tab elements
     local tabElements = wardrobeCollectionFrame:GetElementsForTab(tabId)
 
@@ -134,8 +139,7 @@ local function UpdateActiveTabLayout()
     end
 end
 
-
-local function ApplyChanges()
+function Module:OnInitialize()
     Module:DebugLog("Applying changes.")
 
     -- hook size changed to update layout
@@ -159,16 +163,5 @@ local function ApplyChanges()
             end
         end
     end)
-end
-
-function Module:OnInitialize()
-    Core.EventFrame:AddEvent(
-        "PLAYER_INTERACTION_MANAGER_FRAME_SHOW",
-        function(self, handle, _, frameId)
-            if frameId ~= Core.Modules.TransmogFrame.Settings.TRANSMOG_FRAME_ID then return end
-            ApplyChanges()
-            self:RemoveEvent(handle)
-        end
-    )
 end
 

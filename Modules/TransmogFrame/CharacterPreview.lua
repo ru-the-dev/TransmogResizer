@@ -87,15 +87,12 @@ local function CharacterPreviewFrame_UpdateWidth()
     preview:SetWidth(clampedWidth)
 end
 
-
-
-local function ApplyChanges()
+function Module:OnInitialize()
     Module:DebugLog("Applying changes.")
 
     Module:FixAnchors();
-
+    
     CharacterPreviewFrame_HookReset();
-    CharacterPreviewFrame_FixCamera();
     CharacterPreviewFrame_UpdateWidth();
 
 
@@ -103,18 +100,6 @@ local function ApplyChanges()
     transmogFrameModule:GetFrame():HookScript("OnShow", function(self)
         CharacterPreviewFrame_FixCamera();
     end)
-end
-
-function Module:OnInitialize()
-    Core.EventFrame:AddEvent(
-        "PLAYER_INTERACTION_MANAGER_FRAME_SHOW",
-        function(self, handle, _, frameId)
-            if frameId ~= transmogFrameModule.Settings.TRANSMOG_FRAME_ID then return end
-
-            ApplyChanges()
-            self:RemoveEvent(handle)
-        end
-    )
 end
 
 

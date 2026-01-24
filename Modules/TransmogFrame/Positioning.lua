@@ -10,7 +10,8 @@ local Module = Core.Libs.LibRu.Module.New(
     "Positioning", 
     Core.Modules.TransmogFrame, 
     { 
-        Core.Modules.TransmogFrame 
+        Core.Modules.TransmogFrame,
+        Core.Modules.AccountDB
     }
 );
 
@@ -59,7 +60,7 @@ local function SaveFramePosition()
     savedPosition.OffsetY = offsetY
 end
 
-local function ApplyChanges()
+function Module:OnInitialize()
     Module:DebugLog("Applying changes.")
 
     RestoreSavedPosition();
@@ -83,15 +84,4 @@ local function ApplyChanges()
     transmogFrame:HookScript("OnShow", function(self)
         RestoreSavedPosition();
     end)
-end
-
-function Module:OnInitialize()
-    Core.EventFrame:AddEvent(
-        "PLAYER_INTERACTION_MANAGER_FRAME_SHOW",
-        function(self, handle, _, frameId)
-            if frameId ~= transmogFrameModule.Settings.TRANSMOG_FRAME_ID then return end
-            ApplyChanges()
-            self:RemoveEvent(handle)
-        end
-    )
 end

@@ -46,7 +46,10 @@ Module.Settings = {
     }
 }
 
-local function ApplyChanges()
+-- =======================================================
+-- Module Implementation
+-- =======================================================
+function Module:OnInitialize()
     Module:DebugLog("Applying changes to WardrobeCollection module.")
     
     -- initial frame setup
@@ -62,26 +65,6 @@ local function ApplyChanges()
     Module:GetFrame().TabContent.SituationsFrame:HookScript("OnHide", function()
         transmogFrameModule:SetDefaultResizeBounds();
     end)
-
-    
-end
-
-
--- =======================================================
--- Module Implementation
--- =======================================================
-function Module:OnInitialize()
-    Core.EventFrame:AddEvent(
-        "PLAYER_INTERACTION_MANAGER_FRAME_SHOW",
-        function(self, handle, _, frameId)
-            if frameId ~= transmogFrameModule.Settings.TRANSMOG_FRAME_ID then return end
-            
-            ApplyChanges();
-            
-
-            self:RemoveEvent(handle)
-        end
-    )
 end
 
 

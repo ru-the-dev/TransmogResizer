@@ -32,8 +32,7 @@ Module.Settings = {
 -- =======================================================
 -- Module Implementation
 -- =======================================================
-
-local function ApplyChanges()
+function Module:OnInitialize()
     Module:DebugLog("Applying changes.")
 
     local transmogFrame = transmogFrameModule:GetFrame();
@@ -50,15 +49,4 @@ local function ApplyChanges()
     end)
 
     transmogFrame.BT_SettingsButton = settingsButton;
-end
-
-function Module:OnInitialize()
-    Core.EventFrame:AddEvent(
-        "PLAYER_INTERACTION_MANAGER_FRAME_SHOW",
-        function(self, handle, _, frameId)
-            if frameId ~= transmogFrameModule.Settings.TRANSMOG_FRAME_ID then return end
-            ApplyChanges()
-            self:RemoveEvent(handle)
-        end
-    )
 end
