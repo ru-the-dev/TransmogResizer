@@ -26,11 +26,6 @@ local transmogFrameModule = Core.Modules.TransmogFrame;
 -- =======================================================
 
 Module.Settings = {
-    TransmogFrame = {
-        MinHeight = 750,
-        MinWidth = 1330,
-    },
-    SituationsTabMinWidth = 630
 }
 
 
@@ -46,53 +41,45 @@ local function GetOutfitCollectionAndCharacterPreviewWidth()
 
     if outfitCollectionFrameModule == nil then return nil end
 
-    return outfitCollectionFrameModule.Settings.ExpandedWidth + _G.TransmogFrame.CharacterPreview:GetWidth()
+    return outfitCollectionFrameModule.Settings.ExpandedWidth + transmogFrameModule:GetFrame().CharacterPreview:GetWidth()
 end
 
-local function SetCollectionFrameWidth(collectionFrameWidth)
-    Module:DebugLog("Setting TransmogFrame collection frame width to " .. tostring(collectionFrameWidth))
-
-    local outfitCollectionAndCharacterPreviewWidth = GetOutfitCollectionAndCharacterPreviewWidth();
-
-    if outfitCollectionAndCharacterPreviewWidth == nil then
-        error("OutfitCollection module not loaded, cannot set collection frame width.");
-        return;
-    end
-
-    ---@type Frame
-    local transmogFrame = _G.TransmogFrame;
-    transmogFrame:SetWidth(collectionFrameWidth + outfitCollectionAndCharacterPreviewWidth);
-end
 
 
 local function SetResizeBounds()
     Module:DebugLog("Setting TransmogFrame resize bounds.");
 
-    ---@type Frame
-    local transmogFrame = _G.TransmogFrame;
+    local transmogFrame = transmogFrameModule:GetFrame();
 
-    local isSituationsTabVisible = _G.TransmogFrame.WardrobeCollection.TabContent.SituationsFrame:IsShown();
-    local collectionLayoutModule = transmogFrameModule.Modules.CollectionLayout;
+    if not transmogFrame then
+        Module:DebugLog("TransmogFrame is nil, cannot set resize bounds.");
+        return
+    end
+
+    local isSituationsTabVisible = transmogFrame.WardrobeCollection.TabContent.SituationsFrame:IsShown();
+    
+    ---@type BetterTransmog.Modules.TransmogFrame.WardrobeCollection.Layout|nil
+    local wardrobeCollectionLayoutModule = transmogFrameModule:GetModule("WardrobeCollection.CollectionLayout")
     local outfitCollectionAndCharacterPreviewWidth = GetOutfitCollectionAndCharacterPreviewWidth();
 
     local minWidth = 0;
 
-    if collectionLayoutModule and outfitCollectionAndCharacterPreviewWidth then
+    if wardrobeCollectionLayoutModule and outfitCollectionAndCharacterPreviewWidth then
         if isSituationsTabVisible then
             minWidth = outfitCollectionAndCharacterPreviewWidth + Module.Settings.SituationsTabMinWidth
             Module:DebugLog("Situations tab is visible, setting min width to " .. tostring(minWidth))
         else
             -- calculate min width based on situations tab min width + outfit collection + character preview
-            minWidth = outfitCollectionAndCharacterPreviewWidth + collectionLayoutModule.Settings.MinFrameWidth
+            minWidth = outfitCollectionAndCharacterPreviewWidth + wardrobeCollectionLayoutModule.Settings.MinFrameWidth
             Module:DebugLog("Situations tab is not visible, setting min width to " .. tostring(minWidth))
         end
        
     else 
         -- fallback to our default
-        minWidth = Module.Settings.TransmogFrame.MinWidth;
+        minWidth = transmogFrameModule.Settings.MinWidth
     end
 
-    transmogFrame:SetResizeBounds(minWidth, Module.Settings.TransmogFrame.MinHeight)
+    transmogFrame:SetResizeBounds(minWidth, transmogFrameModule.Settings.MinHeight)
 end
 
 local function RestoreSavedSize()
@@ -100,14 +87,14 @@ local function RestoreSavedSize()
     -- restore posizesition from account DB
     local savedSize = Core.Modules.AccountDB.DB.TransmogFrame.FrameSize;
 
-    _G.TransmogFrame:SetSize(savedSize.Width, savedSize.Height)
+    transmogFrameModule:GetFrame():SetSize(savedSize.Width, savedSize.Height)
     
 end
 
 local function SaveFrameSize()
     Module:DebugLog("Saving TransmogFrame size to AccountDB.");
     
-    local width, height = _G.TransmogFrame:GetSize()
+    local width, height = transmogFrameModule:GetFrame():GetSize()
 
 
     -- save size to account DB
@@ -116,6 +103,7 @@ local function SaveFrameSize()
     savedSize.Width = width
     savedSize.Height = height
 end
+
 
 local function ApplyChanges()
     Module:DebugLog("Applying changes.")
@@ -129,30 +117,27 @@ local function ApplyChanges()
     -- note: we don't have to restore size on show, as the frame retains its size while hidden
 
     -- hook hide to save size
-    _G.TransmogFrame:HookScript("OnHide", function(self)
+    transmogFrameModule:GetFrame():HookScript("OnHide", function(self)
         SaveFrameSize();
     end)
 
-    local resizeButton = Core.Libs.LibRu.Frames.ResizeButton.New(
-        _G.TransmogFrame,
-        _G.TransmogFrame,
-        30
-    )
-
-    resizeButton:SetFrameStrata("FULLSCREEN_DIALOG")
-
-    _G.TransmogFrame.ResizeButton = resizeButton
-
+    -- add resize button
+    Module:AddResizeButton();
 
     -- hook on situations show to adjust width if needed
-    _G.TransmogFrame.WardrobeCollection.TabContent.SituationsFrame:HookScript("OnShow", function(self)
+    transmogFrameModule:GetFrame().WardrobeCollection.TabContent.SituationsFrame:HookScript("OnShow", function(self)
         Module:DebugLog("Situations tab shown, adjusting width if needed.")
-        
-        Module:UpdateSituationTabMinWidth();
+
+        ---@type BetterTransmog.Modules.TransmogFrame.WardrobeCollection|nil
+        local wardrobeCollectionModule = transmogFrameModule:GetModule("WardrobeCollection")
+
+        if wardrobeCollectionModule then
+            wardrobeCollectionModule:UpdateSituationTabMinWidth()
+        end
     end)
 
     -- hook on situations show to adjust width if needed
-    _G.TransmogFrame.WardrobeCollection.TabContent.SituationsFrame:HookScript("OnHide", function(self)
+    transmogFrameModule:GetFrame().WardrobeCollection.TabContent.SituationsFrame:HookScript("OnHide", function(self)
         Module:DebugLog("Situations tab shown, adjusting width if needed.")
         SetResizeBounds()
     end)
@@ -169,12 +154,18 @@ function Module:OnInitialize()
     )
 end
 
-function Module:UpdateSituationTabMinWidth()
-    local situationsFrame = _G.TransmogFrame.WardrobeCollection.TabContent.SituationsFrame
-    
-    if (situationsFrame:GetWidth() < Module.Settings.SituationsTabMinWidth) then
-        Module:DebugLog("Situations tab width is less than minimum, adjusting collection frame width.")
-        SetCollectionFrameWidth(Module.Settings.SituationsTabMinWidth)
+function Module:AddResizeButton()
+    if transmogFrameModule:GetFrame().BT_ResizeButton then
+        Module:DebugLog("Resize button already exists, skipping creation.")
+        return
     end
-    SetResizeBounds()
+
+    local resizeButton = Core.Libs.LibRu.Frames.ResizeButton.New(
+        transmogFrameModule:GetFrame(),
+        transmogFrameModule:GetFrame(),
+        30
+    )
+
+    resizeButton:SetFrameStrata("FULLSCREEN_DIALOG")
+    transmogFrameModule:GetFrame().BT_ResizeButton = resizeButton
 end

@@ -12,7 +12,7 @@ local Module = Core.Libs.LibRu.Module.New(
 )
 
 --- ======================================================
---- Dependencies
+--- locals
 --- ======================================================
 ---@type BetterTransmog.Modules.AccountDB
 local accountDBModule = Core.Modules.AccountDB;
@@ -20,14 +20,20 @@ local accountDBModule = Core.Modules.AccountDB;
 ---@type BetterTransmog.Modules.TransmogFrame.CharacterPreview
 local characterPreviewModule = Core.Modules.TransmogFrame.Modules.CharacterPreview;
 
---- =======================================================
---- Module Settings
---- =======================================================;
-
-
-
 -- Track if a reload dialog is already shown
 local reloadDialogShown = false
+
+
+
+--- =======================================================
+--- Module Settings
+--- =======================================================
+
+
+
+--- =======================================================
+--- Module Implementation
+--- =======================================================
 
 --- Shows a dialog prompting the user to reload the UI
 local function ShowReloadDialog()

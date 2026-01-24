@@ -36,8 +36,10 @@ Module.Settings = {
 local function ApplyChanges()
     Module:DebugLog("Applying changes.")
 
-    local settingsButton = CreateFrame("Button", "BetterTransmog_TransmogFrame_SettingsButton", _G.TransmogFrame, "UIPanelButtonTemplate");
-    settingsButton:SetPoint("RIGHT", _G.TransmogFrame.CloseButton, "LEFT", -2, 0);
+    local transmogFrame = transmogFrameModule:GetFrame();
+
+    local settingsButton = CreateFrame("Button", "BetterTransmog_TransmogFrame_SettingsButton", transmogFrame, "UIPanelButtonTemplate");
+    settingsButton:SetPoint("RIGHT", transmogFrame.CloseButton, "LEFT", -2, 0);
     settingsButton:SetText("BT Settings");
     settingsButton:SetFrameStrata("HIGH");
     settingsButton:SetHeight(24);
@@ -47,8 +49,7 @@ local function ApplyChanges()
         Core.Modules.Settings:OpenSettingsFrame()
     end)
 
-    _G.TransmogFrame.BetterTransmogSettingsButton = settingsButton;
-
+    transmogFrame.BT_SettingsButton = settingsButton;
 end
 
 function Module:OnInitialize()

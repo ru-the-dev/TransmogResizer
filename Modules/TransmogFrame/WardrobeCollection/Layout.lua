@@ -5,28 +5,24 @@
 ---@class BetterTransmog
 local Core = _G.BetterTransmog;
 
---- @class BetterTransmog.Modules.TransmogFrame.CollectionLayout : LibRu.Module
+--- @class BetterTransmog.Modules.TransmogFrame.WardrobeCollection.Layout : LibRu.Module
 local Module = Core.Libs.LibRu.Module.New(
-    "CollectionLayout", 
-    Core.Modules.TransmogFrame, 
+    "Layout", 
+    Core.Modules.TransmogFrame.Modules.WardrobeCollection, 
     { 
-        Core.Modules.TransmogFrame 
+        Core.Modules.TransmogFrame.Modules.WardrobeCollection
     }
 );
 
 --- =======================================================
 --- Dependencies
 --- ======================================================
----@type BetterTransmog.Modules.TransmogFrame
-local transmogFrameModule = Core.Modules.TransmogFrame;
+local wardrobeCollectionModule = Core.Modules.TransmogFrame.Modules.WardrobeCollection;
 
 
 --- =======================================================
 -- Module Settings
 -- =======================================================
-Module.Settings = {
-    MinFrameWidth = 450,
-}
 
 
 -- =======================================================
@@ -107,7 +103,7 @@ end
 --- Updates the layout of the active wardrobe collection tab if needed
 --- by checking if the layout signature has changed (rows x columns)
 local function UpdateActiveTabLayout()
-    local wardrobeCollectionFrame = _G.TransmogFrame.WardrobeCollection
+    local wardrobeCollectionFrame = wardrobeCollectionModule:GetFrame();
 
     -- get active tab ID
     local tabId = wardrobeCollectionFrame:GetTab()
@@ -145,13 +141,13 @@ local function ApplyChanges()
     Module:DebugLog("Applying changes.")
 
     -- hook size changed to update layout
-    _G.TransmogFrame.WardrobeCollection:HookScript("OnSizeChanged", function()
+    wardrobeCollectionModule:GetFrame():HookScript("OnSizeChanged", function()
        UpdateActiveTabLayout();
     end)
 
 
     --- hook into tab changes to update remove layout signature to avoid stale layouts
-    hooksecurefunc(_G.TransmogFrame.WardrobeCollection.internalTabTracker, "SetTab", function(self, tabId)
+    hooksecurefunc(wardrobeCollectionModule:GetFrame().internalTabTracker, "SetTab", function(self, tabId)
         -- get active tab elements
         local tabElements = self:GetElementsForTab(tabId)
 
@@ -171,7 +167,7 @@ function Module:OnInitialize()
     Core.EventFrame:AddEvent(
         "PLAYER_INTERACTION_MANAGER_FRAME_SHOW",
         function(self, handle, _, frameId)
-            if frameId ~= transmogFrameModule.Settings.TRANSMOG_FRAME_ID then return end
+            if frameId ~= Core.Modules.TransmogFrame.Settings.TRANSMOG_FRAME_ID then return end
             ApplyChanges()
             self:RemoveEvent(handle)
         end

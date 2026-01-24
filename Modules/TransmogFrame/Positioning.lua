@@ -38,14 +38,16 @@ local function RestoreSavedPosition()
     Module:DebugLog("Restoring TransmogFrame position from AccountDB.");
     -- restore position from account DB
     local savedPosition = Core.Modules.AccountDB.DB.TransmogFrame.FramePosition;
+    local transmogFrame = transmogFrameModule:GetFrame();
 
-    _G.TransmogFrame:ClearAllPoints()
-    _G.TransmogFrame:SetPoint(savedPosition.Point, _G[savedPosition.RelativeTo], savedPosition.RelativePoint, savedPosition.OffsetX, savedPosition.OffsetY)
+    transmogFrame:ClearAllPoints()
+    transmogFrame:SetPoint(savedPosition.Point, _G[savedPosition.RelativeTo], savedPosition.RelativePoint, savedPosition.OffsetX, savedPosition.OffsetY)
 end
 
 local function SaveFramePosition()
     Module:DebugLog("Saving TransmogFrame position to AccountDB.");
-    local point, relativeTo, relativePoint, offsetX, offsetY = _G.TransmogFrame:GetPoint()
+    local transmogFrame = transmogFrameModule:GetFrame();
+    local point, relativeTo, relativePoint, offsetX, offsetY = transmogFrame:GetPoint()
 
     -- save position to account DB
     local savedPosition = Core.Modules.AccountDB.DB.TransmogFrame.FramePosition
@@ -62,21 +64,23 @@ local function ApplyChanges()
 
     RestoreSavedPosition();
 
+    local transmogFrame = transmogFrameModule:GetFrame();
+
     Core.Libs.LibRu.Utils.Frame.MakeDraggable(
-        _G.TransmogFrame.TitleContainer,
-        _G.TransmogFrame,
+        transmogFrame.TitleContainer,
+        transmogFrame,
         true
     )
 
     -- set transmog frame to be user placed
-    _G.TransmogFrame:SetUserPlaced(true);
+    transmogFrame:SetUserPlaced(true);
 
     -- hook show/hide to save/restore position
-    _G.TransmogFrame:HookScript("OnHide", function(self)
+    transmogFrame:HookScript("OnHide", function(self)
         SaveFramePosition();
     end)
 
-    _G.TransmogFrame:HookScript("OnShow", function(self)
+    transmogFrame:HookScript("OnShow", function(self)
         RestoreSavedPosition();
     end)
 end
