@@ -113,7 +113,7 @@ local function UpdateActiveTabLayout()
 
     -- loop over elements
     for _, element in ipairs(tabElements) do
-
+        
         -- if the element has paged content (AKA it's a PagedContentFrame)
         if element:IsShown() and element.PagedContent then
             local paged = element.PagedContent
@@ -124,8 +124,6 @@ local function UpdateActiveTabLayout()
             -- if the signature has changed from the old layout, update layouts
             if sig and paged.BT_LayoutSignature ~= sig then
                 -- store new signature on the frame
-                
-
                 Module:DebugLog("Layout signature changed to " .. sig .. ", updating layouts.")
                 -- update layouts
                 paged:UpdateLayouts()

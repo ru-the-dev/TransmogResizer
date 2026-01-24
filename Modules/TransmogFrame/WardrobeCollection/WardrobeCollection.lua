@@ -46,6 +46,26 @@ Module.Settings = {
     }
 }
 
+local function ApplyChanges()
+    Module:DebugLog("Applying changes to WardrobeCollection module.")
+    
+    -- initial frame setup
+    Module:FixAnchors();
+    Module:SetCollectionFrameMinWidth();
+
+    
+
+    Module:GetFrame().TabContent.SituationsFrame:HookScript("OnShow", function()
+        Module:UpdateSituationTabMinWidth();
+    end)
+
+    Module:GetFrame().TabContent.SituationsFrame:HookScript("OnHide", function()
+        transmogFrameModule:SetDefaultResizeBounds();
+    end)
+
+    
+end
+
 
 -- =======================================================
 -- Module Implementation
@@ -56,7 +76,7 @@ function Module:OnInitialize()
         function(self, handle, _, frameId)
             if frameId ~= transmogFrameModule.Settings.TRANSMOG_FRAME_ID then return end
             
-            Module:FixAnchors();
+            ApplyChanges();
             
 
             self:RemoveEvent(handle)
@@ -73,16 +93,15 @@ function Module:UpdateSituationTabMinWidth()
         return
     end
     
-    if (situationsFrame:GetWidth() < Module.Settings.SituationsTabMinWidth) then
-        Module:DebugLog("Situations tab width is less than minimum, adjusting collection frame width.")
-        self:SetCollectionFrameWidth(Module.Settings.SituationsTabMinWidth)
-    end
+    self:SetCollectionFrameMinWidth(Module.Settings.SituationsTabMinWidth)
 end
 
 
 --- Adjusts the width of the TransmogFrame to set the collection frame to the desired width.
----@param collectionFrameWidth number The desired width of the collection frame
-function Module:SetCollectionFrameWidth(collectionFrameWidth)
+---@param collectionFrameWidth? number The desired width of the collection frame if nil, resets to default min width
+function Module:SetCollectionFrameMinWidth(collectionFrameWidth)
+    collectionFrameWidth = collectionFrameWidth or Module.Settings.MinFrameWidth;
+
     Module:DebugLog("Setting TransmogFrame collection frame width to " .. tostring(collectionFrameWidth))
 
     transmogFrameModule:SetMinFrameWidth(transmogFrameModule:GetStaticSizedChildrenWidth() + collectionFrameWidth);

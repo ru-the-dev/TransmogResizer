@@ -44,44 +44,6 @@ local function GetOutfitCollectionAndCharacterPreviewWidth()
     return outfitCollectionFrameModule.Settings.ExpandedWidth + transmogFrameModule:GetFrame().CharacterPreview:GetWidth()
 end
 
-
-
-local function SetResizeBounds()
-    Module:DebugLog("Setting TransmogFrame resize bounds.");
-
-    local transmogFrame = transmogFrameModule:GetFrame();
-
-    if not transmogFrame then
-        Module:DebugLog("TransmogFrame is nil, cannot set resize bounds.");
-        return
-    end
-
-    local isSituationsTabVisible = transmogFrame.WardrobeCollection.TabContent.SituationsFrame:IsShown();
-    
-    ---@type BetterTransmog.Modules.TransmogFrame.WardrobeCollection.Layout|nil
-    local wardrobeCollectionLayoutModule = transmogFrameModule:GetModule("WardrobeCollection.CollectionLayout")
-    local outfitCollectionAndCharacterPreviewWidth = GetOutfitCollectionAndCharacterPreviewWidth();
-
-    local minWidth = 0;
-
-    if wardrobeCollectionLayoutModule and outfitCollectionAndCharacterPreviewWidth then
-        if isSituationsTabVisible then
-            minWidth = outfitCollectionAndCharacterPreviewWidth + Module.Settings.SituationsTabMinWidth
-            Module:DebugLog("Situations tab is visible, setting min width to " .. tostring(minWidth))
-        else
-            -- calculate min width based on situations tab min width + outfit collection + character preview
-            minWidth = outfitCollectionAndCharacterPreviewWidth + wardrobeCollectionLayoutModule.Settings.MinFrameWidth
-            Module:DebugLog("Situations tab is not visible, setting min width to " .. tostring(minWidth))
-        end
-       
-    else 
-        -- fallback to our default
-        minWidth = transmogFrameModule.Settings.MinWidth
-    end
-
-    transmogFrame:SetResizeBounds(minWidth, transmogFrameModule.Settings.MinHeight)
-end
-
 local function RestoreSavedSize()
     Module:DebugLog("Restoring TransmogFrame size from AccountDB.");
     -- restore posizesition from account DB
@@ -108,13 +70,8 @@ end
 local function ApplyChanges()
     Module:DebugLog("Applying changes.")
 
-    -- set transmog frame's resize bounds
-    SetResizeBounds();
-
     -- restore size for the first time opening
     RestoreSavedSize();
-
-    -- note: we don't have to restore size on show, as the frame retains its size while hidden
 
     -- hook hide to save size
     transmogFrameModule:GetFrame():HookScript("OnHide", function(self)
@@ -134,12 +91,6 @@ local function ApplyChanges()
         if wardrobeCollectionModule then
             wardrobeCollectionModule:UpdateSituationTabMinWidth()
         end
-    end)
-
-    -- hook on situations show to adjust width if needed
-    transmogFrameModule:GetFrame().WardrobeCollection.TabContent.SituationsFrame:HookScript("OnHide", function(self)
-        Module:DebugLog("Situations tab shown, adjusting width if needed.")
-        SetResizeBounds()
     end)
 end
 

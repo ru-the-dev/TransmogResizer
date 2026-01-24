@@ -124,7 +124,22 @@ function Module:GetFrame()
 
     _transmogFrame = _G.TransmogFrame;
 
+    -- set initial resize bounds (will be overrriden later by other modules if needed)
+    Module:SetDefaultResizeBounds();
+
     return _transmogFrame;
+end
+
+function Module:SetDefaultResizeBounds()
+    -- set default
+    self:SetMinFrameSize(Module.Settings.MinWidth, Module.Settings.MinHeight, true);
+
+    --- check if size module is loaded, and adjust accordingly
+    --- @type BetterTransmog.Modules.TransmogFrame.WardrobeCollection|nil
+    local wardrobeCollectionModule = self:GetModule("WardrobeCollection");
+    if wardrobeCollectionModule then
+        wardrobeCollectionModule:SetCollectionFrameMinWidth();
+    end
 end
 
 

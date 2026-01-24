@@ -18,7 +18,7 @@ Core.Libs.LibRu = LibRu;
 Core:RegisterSlashCommand("/bettertransmog", {
     ["default"] = function(msg, editbox)
         Core:DebugLog("BetterTransmog default command executed: " .. tostring(msg) .. " | Editbox: " .. tostring(editbox))
-    end,
+    end
 })
 
 
