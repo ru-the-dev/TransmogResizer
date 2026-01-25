@@ -9,6 +9,9 @@ local Module = Core.Libs.LibRu.Module.New("AccountDB", Core, { Core });
 
 local DEFAULTS = {
     LastChangeLogVersion = "",
+    MinimapButton = { -- for LibDbIcon
+        hide = false
+    },
     TransmogFrame = {
         CharacterPreviewFrameWidth = 450,
         FramePosition = {
