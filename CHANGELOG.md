@@ -1,5 +1,10 @@
 # Version 2.0.4
 
+## Added BetterTransmog Minimap button
+Added a better transmog minimap button that lets you open the Outfit Swap mode or the settings
+ 
+![Minimap Button Screenshot](Assets/Screenshots/Screenshot 2026-01-25 121701.png)
+
 
 # Version 2.0.3
 

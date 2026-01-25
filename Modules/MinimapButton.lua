@@ -44,7 +44,7 @@ function Module:OnInitialize()
         end,
         OnTooltipShow = function(tooltip)
             tooltip:AddLine("BetterTransmog")
-            tooltip:AddLine("Left-click to toggle Transmog Frame", 1, 1, 1)
+            tooltip:AddLine("Left-click to toggle [Outfit Swap Mode]", 1, 1, 1)
             tooltip:AddLine("Right-click for options", 1, 1, 1)
         end,
     })
