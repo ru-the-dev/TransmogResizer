@@ -34,4 +34,4 @@ Settings are saved automatically per Account. Your grid layout will automaticall
 
 ## Support & Feedback
 
-For issues, suggestions, or feedback, please contact: **ru\_the\_dev** on Discord or leave a comment on the curseforge page
+For issues, suggestions, or feedback, please contact: use the github issues page
