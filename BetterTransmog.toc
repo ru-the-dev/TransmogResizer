@@ -9,12 +9,10 @@
 ## DefaultState: Enabled
 ## LoadOnDemand: 0
 ## IconTexture: Interface\AddOns\BetterTransmog\Assets\logo
-## Dependencies: Blizzard_Collections, Blizzard_Transmog
+## Dependencies: LibRu, Blizzard_Collections, Blizzard_Transmog
 ## OptionalDeps: BetterWardrobe
 
 ## SavedVariables: BetterTransmogAccountDB
-
-LibRu/Load.xml
 
 Core.lua
 Modules/AccountDB.lua
