@@ -7,7 +7,7 @@ Added a better transmog minimap button that lets:
 - \[Left-Click\] Open Outfit swapping panel 
 - \[Right-Click\] Open BetterTransmog Settings Panel
 
-![Minimap Button Screenshot](Assets/Screenshots/ChangeLog_MinimapButtonExample.png)
+![Minimap Button Screenshot](Assets/Screenshots/2.0.4_ChangeLog_MinimapButtonExample.png)
 
 ## Added new /slashcommands! 
 The slashcommand system is still a WIP, i will add aliases to command as i improve it in a later update!
@@ -18,8 +18,11 @@ Here are the new /slashcommands:
 
 Expect improvements to slashcommands in the next update so you can alias `/bettertransmog` to `/bt`
 
-## Improved Changelog Frame and System
+## Improved changelog frame and system
 Made the changelog frame more user-friendly with better readability and smoother interactions, so you can enjoy reading about updates without any hassle!
+
+## Added new buttons in the settings
+![Settings Buttons Screenshot](Assets/Screenshots/2.0.4_SettingsButtons.png)
 
 ## Codebase upgrades
 I won't bore you with the technical stuff, but under the hood, things are changing and improving! and if you are interested, you can always have a peek at the GitHub repo <3
