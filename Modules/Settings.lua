@@ -59,7 +59,6 @@ StaticPopupDialogs["BETTERTRANSMOG_RELOAD_UI"] = {
     hideOnEscape = true,
 }
 
-
 local function BuildPanel()
     local accountDB = accountDBModule.DB;
 
@@ -85,12 +84,33 @@ local function BuildPanel()
 
 
     local resetButton = CreateFrame("Button", "BetterTransmog_ResetButton", panel, "GameMenuButtonTemplate")
-    resetButton:SetPoint("TOPLEFT", previewFrameWidthSlider, "BOTTOMLEFT", 0, -verticalSpacing)
-    resetButton:SetSize(100, 25)
+    resetButton:SetPoint("TOPRIGHT", panel, "TOPRIGHT", -50, -15)
+    resetButton:SetSize(125, 25)
     resetButton:SetText("Reset Settings")
     resetButton:SetScript("OnClick", function()
         accountDB:ResetSection({ "TransmogFrame" })
         ReloadUI()
+    end)
+
+    local changelogButton = CreateFrame("Button", "BetterTransmog_changelogButton", panel, "GameMenuButtonTemplate")
+    changelogButton:SetPoint("TOP", resetButton, "BOTTOM", 0, -15)
+    changelogButton:SetSize(125, 25)
+    changelogButton:SetText("Open Changelog")
+    changelogButton:SetScript("OnClick", function()
+        ---@type BetterTransmog.Modules.ChangeLog|nil
+        local changeLogModule = Core:GetModule("ChangeLog");
+        
+        if (changeLogModule) then
+            changeLogModule:ShowChangeLog();
+        end
+    end)
+
+    local feedbackButton = CreateFrame("Button", "BetterTransmog_feedbackButton", panel, "GameMenuButtonTemplate")
+    feedbackButton:SetPoint("TOP", changelogButton, "BOTTOM", 0, -15)
+    feedbackButton:SetSize(125, 25)
+    feedbackButton:SetText("bug/feedback")
+    feedbackButton:SetScript("OnClick", function()
+        Core.Libs.LibRu.Utils.UrlClicker.OpenCopyUrlFrame("https://github.com/ru-the-dev/BetterTransmog/issues", "Please use the copy and paste the following URL to report bugs or provide feedback about BetterTransmog")
     end)
 
     local footer = panel:CreateFontString(nil, "ARTWORK", "GameFontHighlightSmall")
