@@ -49,14 +49,33 @@ Module.Settings = {
 -- =======================================================
 -- Module Implementation
 -- =======================================================
+
+---@param displayMode BetterTransmog.Modules.TransmogFrame.DisplayMode
+local function OnTransmogFrameDisplayModeChanged(eventFrame, handle, displayMode)
+    local wardrobeCollectionFrame = Module:GetFrame();
+    if not wardrobeCollectionFrame then
+        Module:DebugLog("WardrobeCollection frame not found, cannot adjust for display mode change.");
+        return
+    end
+
+    -- handle display mode change
+    if displayMode == transmogFrameModule.Enum.DISPLAY_MODE.FULL then
+        wardrobeCollectionFrame:Show();
+    elseif displayMode == transmogFrameModule.Enum.DISPLAY_MODE.OUTFIT_SWAP then
+        Module:DebugLog("Hiding WardrobeCollection frame for OUTFIT_SWAP display mode.");
+        wardrobeCollectionFrame:Hide();
+    else
+        Module:DebugLog("UnimplmentedDisplayMode: " .. tostring(displayMode))
+    end
+end 
+
+
 function Module:OnInitialize()
     Module:DebugLog("Applying changes to WardrobeCollection module.")
     
     -- initial frame setup
     Module:FixAnchors();
     Module:SetCollectionFrameMinWidth();
-
-    
 
     Module:GetFrame().TabContent.SituationsFrame:HookScript("OnShow", function()
         Module:UpdateSituationTabMinWidth();
@@ -65,6 +84,8 @@ function Module:OnInitialize()
     Module:GetFrame().TabContent.SituationsFrame:HookScript("OnHide", function()
         transmogFrameModule:SetDefaultResizeBounds();
     end)
+
+    Core.EventFrame:AddScript("OnTransmogFrameDisplayModeChanged", OnTransmogFrameDisplayModeChanged);
 end
 
 
@@ -152,3 +173,4 @@ function Module:GetFrame()
 
     return _wardrobeCollectionFrame
 end
+

@@ -34,7 +34,9 @@ function Module:OnInitialize()
         OnClick = function(self, button)
             if button == "LeftButton" then
                 -- Toggle the collections journal (which contains transmog)
-                ToggleCollectionsJournal()
+                if Core.Modules.TransmogFrame then
+                    Core.Modules.TransmogFrame:OpenTransmogFrame(Core.Modules.TransmogFrame.Enum.DISPLAY_MODE.OUTFIT_SWAP)
+                end
             elseif button == "RightButton" then
                 -- Show settings or menu
                 if Core.Modules.Settings then

@@ -42,11 +42,17 @@ Module.Settings = {
 -- Module Implementation
 -- =======================================================
 
+
+
 local function CharacterPreviewFrame_FixCamera()
     local preview = Module:GetFrame()
     local modelScene = preview.ModelScene
     local camera = modelScene:GetActiveCamera();
 
+    if (not camera) then
+        Module:DebugLog("No active camera found in CharacterPreview ModelScene.");
+        return
+    end
 
     camera:SetMinZoomDistance(Module.Settings.MinCameraZoom); 
     camera:SetMaxZoomDistance(Module.Settings.MaxCameraZoom);
@@ -87,6 +93,28 @@ local function CharacterPreviewFrame_UpdateWidth()
     preview:SetWidth(clampedWidth)
 end
 
+---@param oldMode BetterTransmog.Modules.TransmogFrame.DisplayMode
+---@param displayMode BetterTransmog.Modules.TransmogFrame.DisplayMode
+local function OnTransmogFrameDisplayModeChanged(eventFrame, handle, displayMode)
+    local characterPreviewFrame = Module:GetFrame();
+    if not characterPreviewFrame then
+        Module:DebugLog("characterPreviewFrame frame not found, cannot adjust for display mode change.");
+        return
+    end
+
+    -- handle display mode change
+    if displayMode == transmogFrameModule.Enum.DISPLAY_MODE.FULL then
+        characterPreviewFrame:Show();
+        CharacterPreviewFrame_UpdateWidth();
+    elseif displayMode == transmogFrameModule.Enum.DISPLAY_MODE.OUTFIT_SWAP then
+        Module:DebugLog("Hiding characterPreviewFrame frame for OUTFIT_SWAP display mode.");
+        characterPreviewFrame:Hide();
+        characterPreviewFrame:SetWidth(0.1);
+    else
+        Module:DebugLog("UnimplmentedDisplayMode: " .. tostring(displayMode))
+    end
+end 
+
 function Module:OnInitialize()
     Module:DebugLog("Applying changes.")
 
@@ -100,6 +128,8 @@ function Module:OnInitialize()
     transmogFrameModule:GetFrame():HookScript("OnShow", function(self)
         CharacterPreviewFrame_FixCamera();
     end)
+
+    Core.EventFrame:AddScript("OnTransmogFrameDisplayModeChanged", OnTransmogFrameDisplayModeChanged);
 end
 
 
