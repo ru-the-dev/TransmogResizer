@@ -16,98 +16,74 @@ local Module = Core.Libs.LibRu.Module.New(
 ---@type BetterTransmog.Modules.AccountDB
 local accountDBModule = Core.Modules.AccountDB;
 
+local ChangeLogMixin = Core.Libs.LibRu.Frames.Mixins.ChangeLogFrameMixin;
+
 --- ======================================================
 --- Module Data
 --- ======================================================
 
 local CURRENT_VERSION = C_AddOns.GetAddOnMetadata(Core.Name, "Version")
 
-local CHANGELOG_TEXT = [[
-|cffffd100Version 2.0.3|r
+CHANGELOG_ELEMENTS = {
+    ['Version 2.0.4'] = {
+        {type = 'heading', text = [[Version 2.0.4]], level = 1, indent_level = 0},
+        {type = 'text', text = [[Quite a major update containing many requested features and improvements! As usual, thank you for your feedback and support, if you have any, don't hesitate to open a issue on the github page!]], indent_level = 1},
+        {type = 'heading', text = [[Added BetterTransmog Minimap button]], level = 2, indent_level = 1},
+        {type = 'text', text = [[Added a better transmog minimap button that lets:|n|n- [Left-Click] Open Outfit swapping panel |n|n- [Right-Click] Open BetterTransmog Settings Panel]], indent_level = 2},
+        {type = 'text', text = [[]], indent_level = 2},
+        {type = 'image', path = [[Interface/AddOns/BetterTransmog/Assets/Screenshots/ChangeLog_MinimapButtonExample.png]], indent_level = 2},
+        {type = 'heading', text = [[Added new /slashcommands!]], level = 2, indent_level = 1},
+        {type = 'text', text = [[The slashcommand system is still a WIP, i will add aliases to command as i improve it in a later update!|n|nHere are the new /slashcommands:|n|n- |cff0080ff/bettertransmog|r or |cff0080ff/bettertransmog settings|r (opens settings panel)|n|n- |cff0080ff/bettertransmog outfits|r (Opens the outfit swapping panel)|n|n- |cff0080ff/bettertransmog changelog|r (Opens the changelog panel)]], indent_level = 2},
+        {type = 'text', text = [[Expect improvements to slashcommands in the next update so you can alias |cff0080ff/bettertransmog|r to |cff0080ff/bt|r]], indent_level = 2},
+        {type = 'heading', text = [[Improved Changelog Frame and System]], level = 2, indent_level = 1},
+        {type = 'text', text = [[Made the changelog frame more user-friendly with better readability and smoother interactions, so you can enjoy reading about updates without any hassle!]], indent_level = 2},
+        {type = 'heading', text = [[Codebase upgrades]], level = 2, indent_level = 1},
+        {type = 'text', text = [[I won't bore you with the technical stuff, but under the hood, things are changing and improving! and if you are interested, you can always have a peek at the GitHub repo <3]], indent_level = 2},
+    },
+    ['Version 2.0.3'] = {
+        {type = 'heading', text = [[Version 2.0.3]], level = 1, indent_level = 0},
+        {type = 'heading', text = [[Fixed a bug causing a lua error in the Resizing Module]], level = 2, indent_level = 1},
+        {type = 'text', text = [[Yep, gotta make sure we keep it clean and lua error free! 07]], indent_level = 2},
+    },
+    ['Version 2.0.2'] = {
+        {type = 'heading', text = [[Version 2.0.2]], level = 1, indent_level = 0},
+        {type = 'heading', text = [[Upgraded Module System]], level = 2, indent_level = 1},
+        {type = 'text', text = [[Implemented a new module system supporting dependencies and submodules and slashcommands for better code organization and maintainability.]], indent_level = 2},
+        {type = 'heading', text = [[Added ChangeLog Module]], level = 2, indent_level = 1},
+        {type = 'text', text = [[Introduced a new ChangeLog module that displays version updates to users upon addon load.|r]], indent_level = 2},
+        {type = 'heading', text = [[Added a /rl command. |r]], level = 2, indent_level = 1},
+        {type = 'text', text = [[Added a shorthand way to /reload the ui with /rl (Request by F0ki & Jimbo) |r]], indent_level = 2},
+    },
+}
 
-|cffffff00Fixed a bug causing a lua error in the Resizing Module|r
-
-|cffffd100--------------------------|r
-
-|cffffd100Version 2.0.2|r
-
-|cffffff00Upgraded Module System|r
-|cff888888Implemented a new module system supporting dependencies and submodules and slashcommands for better code organization and maintainability.|r
-
-|cffffff00Added ChangeLog Module|r
-|cff888888Introduced a new ChangeLog module that displays version updates to users upon addon load.|r
-
-|cffffff00Added a /rl command. |r
-|cff888888Added a shorthand way to /reload the ui with /rl (Request by F0ki & Jimbo) |r
+-- Group elements by version
+local changelogData = CHANGELOG_ELEMENTS
+local changeLogFrame = nil;
 
 
-|cffe34275Thank you so much for the positive reception to this new addon. Your feedback and feature requests are heard and expect these requested features soon! <3|r
-]]
 
 --- ======================================================
 --- Module Functions
 --- ======================================================
 
-local function CreateChangeLogFrame()
-    local frame = CreateFrame("Frame", "BetterTransmogChangeLogFrame", UIParent, "PortraitFrameTemplate")
-    frame:SetSize(550, 450)
-    frame:SetPoint("CENTER")
-    frame:SetMovable(true)
-    frame:EnableMouse(true)
-    frame:RegisterForDrag("LeftButton")
-    frame:SetScript("OnDragStart", frame.StartMoving)
-    frame:SetScript("OnDragStop", frame.StopMovingOrSizing)
-    frame:SetClampedToScreen(true)
-    frame:SetFrameStrata("DIALOG")
-
-    -- Set portrait
-    frame.PortraitContainer.portrait:SetTexture("Interface\\Icons\\INV_Enchant_Disenchant")
-
-    -- Set title
-    frame.TitleContainer.TitleText:SetText("BetterTransmog Changelog")
-
-    -- Create scroll frame
-    local scrollFrame = CreateFrame("ScrollFrame", nil, frame, "ScrollFrameTemplate")
-    scrollFrame:SetPoint("TOPLEFT", frame, "TOPLEFT", 20, -80)
-    scrollFrame:SetPoint("BOTTOMRIGHT", frame, "BOTTOMRIGHT", -40, 50)
-
-    local scrollChild = CreateFrame("Frame", nil, scrollFrame)
-    scrollChild:SetSize(480, 1000)
-    scrollFrame:SetScrollChild(scrollChild)
-
-    -- Create text
-    local text = scrollChild:CreateFontString(nil, "ARTWORK", "GameFontNormal")
-    text:SetPoint("TOPLEFT", 10, -10)
-    text:SetWidth(460)
-    text:SetJustifyH("LEFT")
-    text:SetText(CHANGELOG_TEXT)
-    text:SetFont(STANDARD_TEXT_FONT, 12)
-
-    -- Add a close button if not present
-    if not frame.CloseButton then
-        local closeButton = CreateFrame("Button", nil, frame, "UIPanelCloseButton")
-        closeButton:SetPoint("TOPRIGHT", frame, "TOPRIGHT", -5, -5)
-    end
-
-    frame:Hide()
-    return frame
-end
-
-local changeLogFrame
-
-local function ShowChangeLog()
-    if not changeLogFrame then
-        changeLogFrame = CreateChangeLogFrame()
-    end
-    changeLogFrame:Show()
-    local accountDB = accountDBModule.DB
-    accountDB.LastChangeLogVersion = CURRENT_VERSION
-end
-
 function Module:OnInitialize()
     local accountDB = accountDBModule.DB
     if accountDB.LastChangeLogVersion ~= CURRENT_VERSION then
-        ShowChangeLog()
+        self:ShowChangeLog();
+        accountDB.LastChangeLogVersion = CURRENT_VERSION
     end
 end
 
+---@param version string? Optional version to show changelog for, defaults to latest
+function Module:ShowChangeLog(version)
+    if not changeLogFrame then
+        --- @type LibRu.Frames.Mixin.ChangeLogFrameMixin|Frame
+        changeLogFrame = CreateFrame("Frame", "BetterTransmogChangeLogFrame", UIParent, "LibRu_ChangeLogFrameTemplate")
+        changeLogFrame:Initialize(Core.Name, "Interface/AddOns/" .. Core.Name .. "/Assets/logo")
+
+        -- Set changelog data
+        changeLogFrame:SetChangeLogData(changelogData)
+    end
+    
+    changeLogFrame:ShowVersion(version)
+end
