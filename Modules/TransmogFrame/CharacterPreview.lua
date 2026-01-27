@@ -206,7 +206,7 @@ local function AddCollapseButton()
         SetPreviewCollapsed(checked)
     end)
 
-    previewCollapseButton:hide(); -- hide by default
+    previewCollapseButton:Hide(); -- hide by default
 end
 
 ---@param eventFrame Frame
