@@ -96,6 +96,12 @@ function Module:SetDisplayMode(displayMode)
         positioning:SaveFramePosition(self.DisplayMode)
     end
 
+    ---@type BetterTransmog.Modules.TransmogFrame.Resizing
+    local resizing = self:GetModule("Resizing")
+    if resizing and resizing.SaveFrameSize then
+        resizing:SaveFrameSize(self.DisplayMode)
+    end
+
     self.IsApplyingMode = true;
     
     if transmogFrame and transmogFrame:IsShown() then

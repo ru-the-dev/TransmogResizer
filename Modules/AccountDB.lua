@@ -29,10 +29,14 @@ local DEFAULTS = {
             OffsetX = 0,
             OffsetY = 0,
         },
-        FrameSize = {
-           Width = 1330,
-           Height = 667,
-        }
+          FrameSizeFull = {
+              Width = 1330,
+              Height = 750,
+          },
+          FrameSizeOutfit = {
+              Width = 762,
+              Height = 750,
+          }
     }
 }
 

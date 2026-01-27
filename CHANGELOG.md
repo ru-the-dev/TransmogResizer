@@ -24,11 +24,11 @@ Here are the new /slashcommands:
 
 a "|" means "OR", so for example `/bt settings` and `/bt options` both are the same command. 
 
-## Improved frame position saving & restoring
+## Improved frame position + size saving & restoring
 The transmog frame has 2 modes now.
 - Outfit swap 
 - Regular
-Positions for these 2 modes are saved and restored seperately for your convenience!
+Positions and sizes for these 2 modes are saved and restored seperately for your convenience!
 
 ## Improved changelog frame and system
 
