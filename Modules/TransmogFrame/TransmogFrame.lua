@@ -74,8 +74,7 @@ function Module:SetDisplayMode(displayMode)
         return
     end
 
-    ---@type BetterTransmog.Modules.TransmogFrame.Positioning
-    local positioning = self:GetModule("Positioning")
+   
 
     -- early out if already in desired mode, just restore positioning
     if self.DisplayMode == displayMode then return end
@@ -90,7 +89,9 @@ function Module:SetDisplayMode(displayMode)
         return
     end
     
-
+    ---@type BetterTransmog.Modules.TransmogFrame.Positioning
+    local positioning = self:GetModule("Positioning")
+    
     if positioning and positioning.SaveFramePosition then
         positioning:SaveFramePosition(self.DisplayMode)
     end
@@ -121,19 +122,23 @@ function Module:SetDisplayMode(displayMode)
 
     self.DisplayMode = displayMode
     Core.EventFrame:FireScript("OnTransmogFrameDisplayModeChanged", displayMode)
+    self.IsApplyingMode = false;
 end
 
 --- Opens the transmog frame in a specific display mode
 ---@param displayMode string
-function Module:OpenFrameInMode(displayMode)
+function Module:ToggleFrameInMode(displayMode)
     local transmogFrame = self:GetFrame()
-    if self.DisplayMode == displayMode and transmogFrame and transmogFrame:IsShown() then
+    if transmogFrame and transmogFrame:IsShown() and self.DisplayMode == displayMode then
+        HideUIPanel(transmogFrame)
         return
     end
 
     self:SetDisplayMode(displayMode)
     ShowUIPanel(transmogFrame)
 end
+
+
 
 
 function Module:GetStaticSizedChildrenWidth()

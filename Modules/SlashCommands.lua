@@ -37,7 +37,7 @@ function Module:OnInitialize()
         ---@type BetterTransmog.Modules.TransmogFrame
         local transmogFrameModule = Core:GetModule("TransmogFrame")
         if transmogFrameModule then
-            transmogFrameModule:OpenFrameInMode(transmogFrameModule.Enum.DISPLAY_MODE.OUTFIT_SWAP)
+            transmogFrameModule:ToggleFrameInMode(transmogFrameModule.Enum.DISPLAY_MODE.OUTFIT_SWAP)
         end
     end
 
