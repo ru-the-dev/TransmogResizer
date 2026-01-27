@@ -25,9 +25,8 @@ local transmogFrameModule = Core.Modules.TransmogFrame;
 --- =======================================================
 -- Module Settings
 -- =======================================================
-Module.Settings = {
-
-}
+Module.Settings = {}
+Module.PendingRestoreToken = 0
 
 
 -- =======================================================
@@ -35,29 +34,49 @@ Module.Settings = {
 -- =======================================================
 
 
-local function RestoreSavedPosition()
+local function GetSavedPosition(displayMode)
+    local transmogFrameDB = Core.Modules.AccountDB.DB.TransmogFrame
+
+    if displayMode == transmogFrameModule.Enum.DISPLAY_MODE.OUTFIT_SWAP then
+        return transmogFrameDB.FramePositionOutfit
+    end
+
+    return transmogFrameDB.FramePositionFull
+end
+
+local function RestoreSavedPosition(displayMode)
     Module:DebugLog("Restoring TransmogFrame position from AccountDB.");
     -- restore position from account DB
-    local savedPosition = Core.Modules.AccountDB.DB.TransmogFrame.FramePosition;
+    local savedPosition = GetSavedPosition(displayMode or transmogFrameModule.DisplayMode);
     local transmogFrame = transmogFrameModule:GetFrame();
+
+    if savedPosition.CenterX and savedPosition.CenterY then
+        transmogFrame:ClearAllPoints()
+        transmogFrame:SetPoint("CENTER", UIParent, "BOTTOMLEFT", savedPosition.CenterX, savedPosition.CenterY)
+        return
+    end
 
     transmogFrame:ClearAllPoints()
     transmogFrame:SetPoint(savedPosition.Point, _G[savedPosition.RelativeTo], savedPosition.RelativePoint, savedPosition.OffsetX, savedPosition.OffsetY)
 end
 
-local function SaveFramePosition()
+local function SaveFramePosition(displayMode)
     Module:DebugLog("Saving TransmogFrame position to AccountDB.");
+    if transmogFrameModule.IsReopeningFrame then return end
     local transmogFrame = transmogFrameModule:GetFrame();
-    local point, relativeTo, relativePoint, offsetX, offsetY = transmogFrame:GetPoint()
+    local centerX, centerY = transmogFrame:GetCenter()
+    if not centerX or not centerY then return end
+
+    local frameScale = transmogFrame:GetEffectiveScale()
+    local parentScale = UIParent:GetEffectiveScale()
+    centerX = centerX * frameScale / parentScale
+    centerY = centerY * frameScale / parentScale
 
     -- save position to account DB
-    local savedPosition = Core.Modules.AccountDB.DB.TransmogFrame.FramePosition
+    local savedPosition = GetSavedPosition(displayMode or transmogFrameModule.DisplayMode)
 
-    savedPosition.Point = point
-    savedPosition.RelativeTo = relativeTo and relativeTo:GetName() or "UIParent"
-    savedPosition.RelativePoint = relativePoint
-    savedPosition.OffsetX = offsetX
-    savedPosition.OffsetY = offsetY
+    savedPosition.CenterX = centerX
+    savedPosition.CenterY = centerY
 end
 
 function Module:OnInitialize()
@@ -83,5 +102,31 @@ function Module:OnInitialize()
 
     transmogFrame:HookScript("OnShow", function(self)
         RestoreSavedPosition();
+    end)
+
+    transmogFrame.TitleContainer:HookScript("OnDragStop", function(self)
+        SaveFramePosition();
+    end)
+end
+
+function Module:RestoreSavedPosition(displayMode)
+    RestoreSavedPosition(displayMode)
+end
+
+function Module:SaveFramePosition(displayMode)
+    SaveFramePosition(displayMode)
+end
+
+function Module:RestoreSavedPositionDeferred(displayMode, delay)
+    Module.PendingRestoreToken = Module.PendingRestoreToken + 1
+    local token = Module.PendingRestoreToken
+    local wait = delay or 0
+
+    C_Timer.After(wait, function()
+        if token ~= Module.PendingRestoreToken then
+            return
+        end
+
+        RestoreSavedPosition(displayMode)
     end)
 end
