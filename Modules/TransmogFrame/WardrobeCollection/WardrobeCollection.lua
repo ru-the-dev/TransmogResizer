@@ -56,6 +56,34 @@ Module.Settings = {
 -- Module Implementation
 -- =======================================================
 
+local function RefreshActiveTab()
+    local wardrobeCollectionFrame = Module:GetFrame();
+
+    -- get active tab ID
+    local tabId = wardrobeCollectionFrame:GetTab()
+
+    if not tabId then
+        Module:DebugLog("No active tab ID found on WardrobeCollectionFrame.")
+        return
+    end
+
+    -- get active tab elements
+    local tabElements = wardrobeCollectionFrame:GetElementsForTab(tabId)
+
+    -- loop over elements
+    for _, element in ipairs(tabElements) do
+        
+        -- if the element has paged content (AKA it's a PagedContentFrame)
+        if element:IsShown() and element.PagedContent then
+            local paged = element.PagedContent
+
+            if paged and paged.RefreshLayout then
+                paged:RefreshLayout()
+                Module:DebugLog("Refreshed layout for active tab ID: " .. tostring(tabId))
+            end
+        end
+    end
+end
 
 ---@param eventFrame Frame
 ---@param handle any
@@ -75,56 +103,16 @@ local function ApplyDisplayMode(eventFrame, handle, displayMode)
     if displayMode == transmogFrameModule.Enum.DISPLAY_MODE.FULL then
         wardrobeCollectionFrame:Show();
 
-        if wardrobeCollectionFrame.SetToDefaultAvailableTab then
-            wardrobeCollectionFrame:SetToDefaultAvailableTab();
+        local preview = _G.TransmogFrame.CharacterPreview
+        if preview and preview.RefreshSlots then
+            preview:RefreshSlots()
         end
 
-        local tabContent = wardrobeCollectionFrame.TabContent
-        if tabContent then
-            local function RefreshFrame(frame)
-                if frame and frame.Refresh then
-                    frame:Refresh();
-                elseif frame and frame.RefreshCollectionEntries then
-                    frame:RefreshCollectionEntries();
-                end
-            end
-
-            RefreshFrame(tabContent.ItemsFrame)
-            RefreshFrame(tabContent.SetsFrame)
-            RefreshFrame(tabContent.CustomSetsFrame)
-
-            C_Timer.After(0, function()
-                RefreshFrame(tabContent.ItemsFrame)
-                RefreshFrame(tabContent.SetsFrame)
-                RefreshFrame(tabContent.CustomSetsFrame)
-            end)
+        local selectedSlotData = preview and preview.GetSelectedSlotData and preview:GetSelectedSlotData() or nil
+        if selectedSlotData then
+            wardrobeCollectionFrame:UpdateSlot(selectedSlotData, true)
         end
-
-        if _G.TransmogFrame and _G.TransmogFrame.CharacterPreview and wardrobeCollectionFrame.UpdateSlot then
-            C_Timer.After(0, function()
-                local preview = _G.TransmogFrame.CharacterPreview
-                if preview.RefreshSlots then
-                    preview:RefreshSlots()
-                end
-
-                local selectedSlotData = preview.GetSelectedSlotData and preview:GetSelectedSlotData() or nil
-                if selectedSlotData then
-                    wardrobeCollectionFrame:UpdateSlot(selectedSlotData, true)
-                end
-            end)
-
-            C_Timer.After(0, function()
-                local preview = _G.TransmogFrame.CharacterPreview
-                if preview and preview.RefreshSlots then
-                    preview:RefreshSlots()
-                end
-
-                local selectedSlotData = preview and preview.GetSelectedSlotData and preview:GetSelectedSlotData() or nil
-                if selectedSlotData then
-                    wardrobeCollectionFrame:UpdateSlot(selectedSlotData, true)
-                end
-            end)
-        end
+      
     elseif displayMode == transmogFrameModule.Enum.DISPLAY_MODE.OUTFIT_SWAP then
         Module:DebugLog("Hiding WardrobeCollection frame for OUTFIT_SWAP display mode.");
         wardrobeCollectionFrame:Hide();

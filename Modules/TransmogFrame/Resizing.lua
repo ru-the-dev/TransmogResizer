@@ -74,18 +74,8 @@ local function ApplyDisplayMode(eventFrame, handle, displayMode)
         return
     end
 
-    if transmogFrameModule.IsReopeningFrame then
-        Module:DebugLog("Reopening frame, deferring resize adjustments until after show.")
-        return
-    end
-
     if displayMode == transmogFrameModule.Enum.DISPLAY_MODE.FULL then
         transmogFrameModule:SetDefaultResizeBounds();
-
-        local positioning = transmogFrameModule:GetModule("Positioning")
-        if positioning and positioning.RestoreSavedPositionDeferred then
-            positioning:RestoreSavedPositionDeferred(displayMode, 0)
-        end
     elseif displayMode == transmogFrameModule.Enum.DISPLAY_MODE.OUTFIT_SWAP then
         -- outfit-mode positioning is applied after preview collapse/expand in CharacterPreview
     end
@@ -133,5 +123,7 @@ function Module:AddResizeButton()
     )
 
     resizeButton:SetFrameStrata("FULLSCREEN_DIALOG")
-    transmogFrameModule:GetFrame().BT_ResizeButton = resizeButton
+    ---@class TransmogFrame : Frame
+    local transmogFrame = transmogFrameModule:GetFrame()
+    transmogFrame.BT_ResizeButton = resizeButton
 end

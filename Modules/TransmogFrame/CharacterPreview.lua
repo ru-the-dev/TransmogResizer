@@ -251,15 +251,8 @@ local function ApplyDisplayMode(eventFrame, handle, displayMode)
             characterPreviewFrame.CharacterPreviewCollapseButton:Enable();
         end
 
-            C_Timer.After(0, function()
-                local collapsed = Core.Modules.AccountDB.DB.TransmogFrame.CharacterPreviewCollapsedOutfit
-                SetPreviewCollapsed(collapsed)
-
-                local positioning = transmogFrameModule:GetModule("Positioning")
-                if positioning and positioning.RestoreSavedPositionDeferred then
-                    positioning:RestoreSavedPositionDeferred(displayMode, 0)
-                end
-            end)
+        local collapsed = Core.Modules.AccountDB.DB.TransmogFrame.CharacterPreviewCollapsedOutfit
+        SetPreviewCollapsed(collapsed)
     end
 end
 
