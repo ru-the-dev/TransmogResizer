@@ -20,6 +20,7 @@ Libs/Load.xml
 ## Addon files
 Core.lua
 Modules/AccountDB.lua
+Modules/SlashCommands.lua
 Modules/TransmogFrame/Load.xml
 Modules/MinimapButton.lua
 Modules/Settings.lua

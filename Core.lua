@@ -14,35 +14,6 @@ local Core = LibRu.Module.New("BetterTransmog", nil, nil, true)
 Core.Libs = {}
 Core.Libs.LibRu = LibRu;
 
--- register default slash command
-Core:RegisterSlashCommand("/bettertransmog", {
-    ["default"] = function(msg, editbox)
-        ---@type BetterTransmog.Modules.Settings
-        local settingsModule = Core:GetModule("Settings");
-        if settingsModule then
-            settingsModule:OpenSettingsFrame();
-        end
-    end,
-    ["settings"] = function(msg, editbox)
-        ---@type BetterTransmog.Modules.Settings
-        local settingsModule = Core:GetModule("Settings");
-        if settingsModule then
-            settingsModule:OpenSettingsFrame();
-        end
-    end,
-    ["changelog"] = function(msg, editbox)
-        ---@type BetterTransmog.Modules.ChangeLog
-        local changeLogModule = Core:GetModule("ChangeLog");
-        if changeLogModule then
-            changeLogModule:ShowChangeLog();
-        end
-    end,
-})
-
-Core:RegisterSlashCommand("/rl", function (msg, editbox)
-    Core:DebugLog("ReloadUI command executed via BetterTransmog.")
-    ReloadUI()
-end)
 
 -- Create a Global event frame
 Core.EventFrame = LibRu.Frames.EventFrame.New(CreateFrame("Frame"));
