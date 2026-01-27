@@ -163,7 +163,7 @@ end
 --- @param minWidth number The minimum width to set for the TransmogFrame
 --- @param autoAdjust? boolean If true, the frame will automatically adjust to meet the minimum width if it's currently smaller (default: true)
 function Module:SetMinFrameWidth(minWidth, autoAdjust)
-    autoAdjust = autoAdjust or true;
+    if autoAdjust == nil then autoAdjust = true end
 
     ---@type Frame
     local transmogFrame = self:GetFrame();
@@ -182,7 +182,7 @@ end
 ---@param minHeight number The minimum height to set for the TransmogFrame
 ---@param autoAdjust? boolean If true, the frame will automatically adjust to meet the minimum height if it's currently smaller (default: true)
 function Module:SetMinFrameHeight(minHeight, autoAdjust)
-    autoAdjust = autoAdjust or true;
+    if autoAdjust == nil then autoAdjust = true end
 
     ---@type Frame
     local transmogFrame = self:GetFrame();
@@ -201,7 +201,7 @@ end
 ---@param maxWidth? number The maximum width to set for the TransmogFrame (default: infinite)
 ---@param autoAdjust? boolean If true, the frame will automatically adjust to meet the maximum width if it's currently bigger (default: true)
 function Module:SetMaxFrameWidth(maxWidth, autoAdjust)
-    autoAdjust = autoAdjust or true;
+    if autoAdjust == nil then autoAdjust = true end
 
     ---@type Frame
     local transmogFrame = self:GetFrame();
@@ -220,7 +220,7 @@ end
 ---@param maxHeight? number The maximum width to set for the TransmogFrame (default: infinite)
 ---@param autoAdjust? boolean If true, the frame will automatically adjust to meet the maximum width if it's currently bigger (default: true)
 function Module:SetMaxFrameHeight(maxHeight, autoAdjust)
-    autoAdjust = autoAdjust or true;
+    if autoAdjust == nil then autoAdjust = true end
 
     ---@type Frame
     local transmogFrame = self:GetFrame();
