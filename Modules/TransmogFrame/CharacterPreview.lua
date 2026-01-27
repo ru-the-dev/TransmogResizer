@@ -191,13 +191,13 @@ local function AddCollapseButton()
     characterPreviewFrame.CharacterPreviewCollapseButton = previewCollapseButton
     outfitCollectionFrame.CharacterPreviewCollapseButton = previewCollapseButton
 
-        previewCollapseButton:SetPoint(
-            "TOPRIGHT",
-            previewCollapseButton:GetParent(),
-            "TOPRIGHT",
-            -Module.Settings.CollapseButton.OffsetX,
-            Module.Settings.CollapseButton.OffsetY
-        )
+    previewCollapseButton:SetPoint(
+        "TOPRIGHT",
+        previewCollapseButton:GetParent(),
+        "TOPRIGHT",
+        -Module.Settings.CollapseButton.OffsetX,
+        Module.Settings.CollapseButton.OffsetY
+    )
     previewCollapseButton:SetFrameStrata(Module.Settings.CollapseButton.FrameStrata)
 
     previewCollapseButton:AddScript("OnClick", function(self)
@@ -205,6 +205,8 @@ local function AddCollapseButton()
 
         SetPreviewCollapsed(checked)
     end)
+
+    previewCollapseButton:hide(); -- hide by default
 end
 
 ---@param eventFrame Frame
