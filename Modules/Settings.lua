@@ -7,7 +7,7 @@ local Module = Core.Libs.LibRu.Module.New(
     Core, 
     { 
         Core.Modules.AccountDB, 
-        Core.Modules.TransmogFrame.CharacterPreview 
+        Core.Modules.TransmogFrame.Modules.CharacterPreview
     } 
 )
 
@@ -66,8 +66,6 @@ local function BuildPanel()
 
     panel.name = Core.Name
 
-    local verticalSpacing = 40;
-
     local title = panel:CreateFontString(nil, "ARTWORK", "GameFontNormalLarge")
     title:SetPoint("TOPLEFT", 16, -16)
     title:SetText("BetterTransmog Settings")
@@ -77,9 +75,25 @@ local function BuildPanel()
     subtitle:SetText("Adjust layout and behavior settings for BetterTransmog.")
 
     local previewFrameWidthSlider = Core.Libs.LibRu.Frames.ValueSlider.New(panel, "BetterTransmog_Slider_PreviewFrameWidth", "Preview Frame Width:", characterPreviewModule.Settings.MinFrameWidth, characterPreviewModule.Settings.MaxFrameWidth, 10, accountDB.TransmogFrame, "CharacterPreviewFrameWidth", function(v) return v .. "px" end)
-    previewFrameWidthSlider:SetPoint("TOPLEFT", subtitle, "BOTTOMLEFT", 0, -verticalSpacing)
+    previewFrameWidthSlider:SetPoint("TOPLEFT", subtitle, "BOTTOMLEFT", 0, -40)
     previewFrameWidthSlider:AddScript("OnValueChanged", function(self, handle, newValue)
         ShowReloadDialog()
+    end)
+
+    ---@type CheckButton
+    local minimapButtonCheckbox = CreateFrame("CheckButton", "BetterTransmog_MinimapButtonCheckbox", panel, "InterfaceOptionsCheckButtonTemplate")
+    minimapButtonCheckbox:SetPoint("TOPLEFT", previewFrameWidthSlider, "BOTTOMLEFT", 0, -20)
+    minimapButtonCheckbox:SetSize(26, 26)
+    minimapButtonCheckbox.Text:SetText("Show minimap button")
+    minimapButtonCheckbox.Text:SetFontObject("GameFontHighlight")
+    minimapButtonCheckbox:SetChecked(not accountDB.MinimapButton.Hidden)
+
+    minimapButtonCheckbox:SetScript("OnClick", function(self)
+        local isChecked = self:GetChecked()
+        if Core.Modules.MinimapButton then
+            Core.Modules.MinimapButton:SetMinimapButtonVisible(isChecked)
+            accountDB.MinimapButton.Hidden = not isChecked
+        end
     end)
 
 
