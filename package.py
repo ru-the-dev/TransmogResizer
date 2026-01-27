@@ -13,13 +13,14 @@ TARGETS = [
 # Glob-style patterns to skip
 EXCLUDES = {
     ".git",
+    ".github",
     ".gitmodules",
     ".gitignore",
     ".gitattributes",
     ".vscode",
     "dist",
     "*.code-workspace",
-    "package.py",
+    "*.py",
 }
 
 
