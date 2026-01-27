@@ -24,9 +24,7 @@ local transmogFrameModule = Core.Modules.TransmogFrame;
 -- Module Settings
 -- =======================================================
 
-Module.Settings = {
-
-}
+Module.Settings = {}
 
 
 -- =======================================================

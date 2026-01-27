@@ -28,6 +28,22 @@ local _outfitCollectionFrame = nil;
 -- =======================================================
 Module.Settings = {
     ExpandedWidth = 312,
+    HiddenFrameWidth = 0.1,
+    OutfitListOffsets = {
+        Compact = 10,
+        Full = 120,
+    },
+    OutfitListInsets = {
+        Left = 5,
+        Right = 5,
+    },
+    OutfitListTopOffset = -102,
+    CollapseButton = {
+        Size = 30,
+        OffsetX = 5,
+        OffsetY = -70,
+        FrameStrata = "DIALOG",
+    },
     AnchorOffset = {
         Top = 21,
         Bottom = 2,
@@ -56,15 +72,21 @@ local function AddCollapseButton()
         characterPreviewFrame, 
         "OutfitCollectionCollapseExtendButton", 
         "bag-arrow", 
-        30,
+        Module.Settings.CollapseButton.Size,
         true
     );
 
     
     characterPreviewFrame.OutfitCollectionCollapseButton = outfitCollectionCollapseButton;
 
-    outfitCollectionCollapseButton:SetPoint("TOPLEFT", outfitCollectionCollapseButton:GetParent(), "TOPLEFT", 5, -70)
-    outfitCollectionCollapseButton:SetFrameStrata("DIALOG")
+    outfitCollectionCollapseButton:SetPoint(
+        "TOPLEFT",
+        outfitCollectionCollapseButton:GetParent(),
+        "TOPLEFT",
+        Module.Settings.CollapseButton.OffsetX,
+        Module.Settings.CollapseButton.OffsetY
+    )
+    outfitCollectionCollapseButton:SetFrameStrata(Module.Settings.CollapseButton.FrameStrata)
 
     outfitCollectionCollapseButton:AddScript("OnClick", function (self)
         local checked = self:GetChecked();
@@ -72,7 +94,7 @@ local function AddCollapseButton()
         
         if (checked) then
             outfitCollectionFrame:Hide();
-            outfitCollectionFrame:SetWidth(0.1);      
+            outfitCollectionFrame:SetWidth(Module.Settings.HiddenFrameWidth);
         else
             outfitCollectionFrame:SetWidth(Module.Settings.ExpandedWidth);
             outfitCollectionFrame:Show();
@@ -81,72 +103,77 @@ local function AddCollapseButton()
 end
 
 
----@param displayMode BetterTransmog.Modules.TransmogFrame.DisplayMode
-local function OnTransmogFrameDisplayModeChanged(eventFrame, handle, displayMode)
+---@param eventFrame Frame
+---@param handle any
+---@param displayMode string
+local function ApplyDisplayMode(eventFrame, handle, displayMode)
+    if not transmogFrameModule:IsValidDisplayMode(displayMode) then
+        Module:DebugLog("UnimplmentedDisplayMode: " .. tostring(displayMode))
+        return
+    end
+
     local transmogFrame = transmogFrameModule:GetFrame();
     local outfitCollectionFrame = Module:GetFrame();
 
     ---@type LibRu.Frames.CollapseExtendCheckButton
     local collapseButton = Core.Libs.LibRu.Utils.Frame.GetFrameByPath(transmogFrame, "CharacterPreview.OutfitCollectionCollapseButton");
 
-    -- handle display mode change
     if displayMode == transmogFrameModule.Enum.DISPLAY_MODE.OUTFIT_SWAP then
-        --- disable collapse button
-        collapseButton:SetCollapsed(false);
-        collapseButton:Hide();
-        collapseButton:Disable();
+        if collapseButton then
+            collapseButton:SetCollapsed(false);
+            collapseButton:Hide();
+            collapseButton:Disable();
+        end
 
-        -- hide purchase outfit button
         if outfitCollectionFrame.PurchaseOutfitButton then
             outfitCollectionFrame.PurchaseOutfitButton:Hide();
         end
         
-        --- hide money frame
         if outfitCollectionFrame.MoneyFrame then
             outfitCollectionFrame.MoneyFrame:Hide();
         end
 
-        -- hide save outfit button
         if outfitCollectionFrame.SaveOutfitButton then
             outfitCollectionFrame.SaveOutfitButton:Hide();
         end
 
-        -- update anchors
         local outfitList = Core.Libs.LibRu.Utils.Frame.GetFrameByPath(outfitCollectionFrame, "OutfitList")
         if outfitList then
-            outfitList:SetPoint("BOTTOMLEFT", outfitCollectionFrame, "BOTTOMLEFT", 5, 10)
-            outfitList:SetPoint("BOTTOMRIGHT", outfitCollectionFrame, "BOTTOMRIGHT", -5, 10)
+            local offset = Module.Settings.OutfitListOffsets.Compact
+            local insetLeft = Module.Settings.OutfitListInsets.Left
+            local insetRight = Module.Settings.OutfitListInsets.Right
+            outfitList:SetPoint("BOTTOMLEFT", outfitCollectionFrame, "BOTTOMLEFT", insetLeft, offset)
+            outfitList:SetPoint("BOTTOMRIGHT", outfitCollectionFrame, "BOTTOMRIGHT", -insetRight, offset)
         end
 
     elseif displayMode == transmogFrameModule.Enum.DISPLAY_MODE.FULL then
-        collapseButton:Enable();
-        collapseButton:Show();
+        if collapseButton then
+            collapseButton:Enable();
+            collapseButton:Show();
+        end
 
-        -- show purchase outfit button
         if outfitCollectionFrame.PurchaseOutfitButton then
             outfitCollectionFrame.PurchaseOutfitButton:Show();
         end
 
-        --- show money frame
         if outfitCollectionFrame.MoneyFrame then
             outfitCollectionFrame.MoneyFrame:Show();
         end
 
-        -- show save outfit button
         if outfitCollectionFrame.SaveOutfitButton then
             outfitCollectionFrame.SaveOutfitButton:Show();
         end
 
-        -- update anchors
         local outfitList = Core.Libs.LibRu.Utils.Frame.GetFrameByPath(outfitCollectionFrame, "OutfitList")
         if outfitList then
-            outfitList:SetPoint("BOTTOMLEFT", outfitCollectionFrame, "BOTTOMLEFT", 5, 120)
-            outfitList:SetPoint("BOTTOMRIGHT", outfitCollectionFrame, "BOTTOMRIGHT", -5, 120)
+            local offset = Module.Settings.OutfitListOffsets.Full
+            local insetLeft = Module.Settings.OutfitListInsets.Left
+            local insetRight = Module.Settings.OutfitListInsets.Right
+            outfitList:SetPoint("BOTTOMLEFT", outfitCollectionFrame, "BOTTOMLEFT", insetLeft, offset)
+            outfitList:SetPoint("BOTTOMRIGHT", outfitCollectionFrame, "BOTTOMRIGHT", -insetRight, offset)
         end
-
-        
     end
-end 
+end
 
 function Module:OnInitialize()
     Module:DebugLog("Applying changes.")
@@ -154,8 +181,8 @@ function Module:OnInitialize()
     Module:FixAnchors();
 
     AddCollapseButton();
-    
-    Core.EventFrame:AddScript("OnTransmogFrameDisplayModeChanged", OnTransmogFrameDisplayModeChanged);
+
+    Core.EventFrame:AddScript("OnTransmogFrameDisplayModeChanged", ApplyDisplayMode)
 end
 
 function Module:GetExpandedWidth()
@@ -180,11 +207,15 @@ function Module:FixAnchors()
 
     local outfitList = Core.Libs.LibRu.Utils.Frame.GetFrameByPath(outfitCollectionFrame, "OutfitList")
     if outfitList then
+        local insetLeft = Module.Settings.OutfitListInsets.Left
+        local insetRight = Module.Settings.OutfitListInsets.Right
+        local topOffset = Module.Settings.OutfitListTopOffset
+        local bottomOffset = Module.Settings.OutfitListOffsets.Full
         outfitList:ClearAllPoints()
-        outfitList:SetPoint("TOPLEFT", outfitCollectionFrame, "TOPLEFT", 5, -102)
-        outfitList:SetPoint("BOTTOMLEFT", outfitCollectionFrame, "BOTTOMLEFT", 5, 120)
-        outfitList:SetPoint("TOPRIGHT", outfitCollectionFrame, "TOPRIGHT", -5, -102)
-        outfitList:SetPoint("BOTTOMRIGHT", outfitCollectionFrame, "BOTTOMRIGHT", -5, 120)
+        outfitList:SetPoint("TOPLEFT", outfitCollectionFrame, "TOPLEFT", insetLeft, topOffset)
+        outfitList:SetPoint("BOTTOMLEFT", outfitCollectionFrame, "BOTTOMLEFT", insetLeft, bottomOffset)
+        outfitList:SetPoint("TOPRIGHT", outfitCollectionFrame, "TOPRIGHT", -insetRight, topOffset)
+        outfitList:SetPoint("BOTTOMRIGHT", outfitCollectionFrame, "BOTTOMRIGHT", -insetRight, bottomOffset)
     end
 end
 

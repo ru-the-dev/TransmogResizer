@@ -25,8 +25,7 @@ local transmogFrameModule = Core.Modules.TransmogFrame;
 -- Module Settings
 -- =======================================================
 
-Module.Settings = {
-}
+Module.Settings = {}
 
 
 
@@ -50,7 +49,7 @@ end
 local function SaveFrameSize()
     Module:DebugLog("Saving TransmogFrame size to AccountDB.");
     
-    if not transmogFrameModule.DisplayMode == transmogFrameModule.Enum.DISPLAY_MODE.FULL then
+    if transmogFrameModule.DisplayMode ~= transmogFrameModule.Enum.DISPLAY_MODE.FULL then
         Module:DebugLog("TransmogFrame is not in FULL display mode, skipping size save.");
         return
     end; 
@@ -66,27 +65,31 @@ local function SaveFrameSize()
     savedSize.Height = height
 end
 
----@param displayMode BetterTransmog.Modules.TransmogFrame.DisplayMode
-local function OnTransmogFrameDisplayModeChanged(eventFrame, handle, displayMode)
-    -- handle display mode change
+---@param eventFrame Frame
+---@param handle any
+---@param displayMode string
+local function ApplyDisplayMode(eventFrame, handle, displayMode)
+    if not transmogFrameModule:IsValidDisplayMode(displayMode) then
+        Module:DebugLog("UnimplmentedDisplayMode: " .. tostring(displayMode))
+        return
+    end
+
+    if transmogFrameModule.IsReopeningFrame then
+        Module:DebugLog("Reopening frame, deferring resize adjustments until after show.")
+        return
+    end
+
     if displayMode == transmogFrameModule.Enum.DISPLAY_MODE.FULL then
         transmogFrameModule:SetDefaultResizeBounds();
 
+        local positioning = transmogFrameModule:GetModule("Positioning")
+        if positioning and positioning.RestoreSavedPositionDeferred then
+            positioning:RestoreSavedPositionDeferred(displayMode, 0)
+        end
     elseif displayMode == transmogFrameModule.Enum.DISPLAY_MODE.OUTFIT_SWAP then
-        ---@type BetterTransmog.Modules.TransmogFrame.OutfitCollection|nil
-        local outfitCollection = transmogFrameModule:GetModule("OutfitCollection");
-        local transmogFrame = transmogFrameModule:GetFrame();
-
-        if not outfitCollection or not transmogFrame then return end
-
-        -- set min and max width to autofit collection width
-        transmogFrameModule:SetMinFrameWidth(outfitCollection.Settings.ExpandedWidth)
-        transmogFrameModule:SetMaxFrameWidth(outfitCollection.Settings.ExpandedWidth)
-
-    else
-        Module:DebugLog("UnimplmentedDisplayMode: " .. tostring(displayMode))
+        -- outfit-mode positioning is applied after preview collapse/expand in CharacterPreview
     end
-end 
+end
 
 function Module:OnInitialize()
     Module:DebugLog("Applying changes.")
@@ -102,7 +105,7 @@ function Module:OnInitialize()
     -- add resize button
     Module:AddResizeButton();
 
-    Core.EventFrame:AddScript("OnTransmogFrameDisplayModeChanged", OnTransmogFrameDisplayModeChanged);
+    Core.EventFrame:AddScript("OnTransmogFrameDisplayModeChanged", ApplyDisplayMode)
 
     -- hook on situations show to adjust width if needed
     transmogFrameModule:GetFrame().WardrobeCollection.TabContent.SituationsFrame:HookScript("OnShow", function(self)

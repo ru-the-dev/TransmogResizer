@@ -22,28 +22,118 @@ local _transmogFrame = nil
 Module.Settings = {
     TRANSMOG_FRAME_ID = 24,
     MinHeight = 750,
-    MinWidth = 1330
+    MinWidth = 1330,
+    MinResizeBounds = {
+        Width = 10,
+        Height = 10,
+    }
 }
 
+Module.DisplayMode = nil
 
-
-Module.Enum = {};
----@enum BetterTransmog.Modules.TransmogFrame.DisplayMode
+Module.Enum = {}
 Module.Enum.DISPLAY_MODE = {
-    FULL = 1,
-    OUTFIT_SWAP = 2
+    FULL = "full",
+    OUTFIT_SWAP = "outfit_swap"
 }
-Module.DisplayMode = Module.Enum.DISPLAY_MODE.FULL; -- default display mode
 
+Module.IsApplyingMode = false
+Module.IsReopeningFrame = false
+Module.IsSwitchingModeHidden = false
 
--- =======================================================
--- Module Implementation
--- =======================================================
-function Module:OnInitialize()
-    Core.EventFrame:AddEvent("TRANSMOGRIFY_OPEN", function()
-        self:SetDisplayMode(Module.Enum.DISPLAY_MODE.FULL);
-    end);
+---@param displayMode string
+---@return boolean
+function Module:IsValidDisplayMode(displayMode)
+    return displayMode == Module.Enum.DISPLAY_MODE.FULL
+        or displayMode == Module.Enum.DISPLAY_MODE.OUTFIT_SWAP
 end
+
+--- =======================================================
+--- Module Implementation
+--- =======================================================
+
+function Module:OnInitialize()
+    -- Set initial display mode to FULL
+    self.DisplayMode = Module.Enum.DISPLAY_MODE.FULL
+    Module:DebugLog("Initial display mode set to: " .. self.DisplayMode)
+    
+    -- Hook TRANSMOGRIFY_OPEN to force FULL mode when transmog NPC opens the frame
+    Core.EventFrame:AddEvent("TRANSMOGRIFY_OPEN", function()
+        Module:DebugLog("TRANSMOGRIFY_OPEN event fired - switching to FULL mode")
+        self:SetDisplayMode(Module.Enum.DISPLAY_MODE.FULL)
+    end)
+end
+
+--- Sets the display mode and applies all associated configuration
+---@param displayMode string
+function Module:SetDisplayMode(displayMode)
+    if not displayMode then
+        Module:DebugLog("ERROR: Invalid display mode - nil provided")
+        return
+    end
+    if self.DisplayMode == displayMode then return end
+
+    local positioning = self:GetModule("Positioning")
+    if positioning and positioning.SaveFramePosition then
+        positioning:SaveFramePosition(self.DisplayMode)
+    end
+
+    local transmogFrame = self:GetFrame()
+    if transmogFrame and transmogFrame:IsShown() and not self.IsReopeningFrame and not self.IsSwitchingModeHidden then
+        self.IsSwitchingModeHidden = true
+        HideUIPanel(transmogFrame)
+
+        self.IsApplyingMode = true
+        self.DisplayMode = displayMode
+        Core.EventFrame:FireScript("OnTransmogFrameDisplayModeChanged", displayMode)
+        self.IsApplyingMode = false
+
+        C_Timer.After(0, function()
+            ShowUIPanel(transmogFrame)
+            self.IsSwitchingModeHidden = false
+        end)
+        return
+    end
+
+    self.IsApplyingMode = true
+    self.DisplayMode = displayMode
+    Core.EventFrame:FireScript("OnTransmogFrameDisplayModeChanged", displayMode)
+    self.IsApplyingMode = false
+end
+
+--- Opens the transmog frame in a specific display mode
+---@param displayMode string
+function Module:OpenFrameInMode(displayMode)
+    local transmogFrame = self:GetFrame()
+    if self.DisplayMode == displayMode and transmogFrame and transmogFrame:IsShown() then
+        return
+    end
+
+    if transmogFrame and transmogFrame:IsShown() then
+        HideUIPanel(transmogFrame)
+        self:SetDisplayMode(displayMode)
+        C_Timer.After(0, function()
+            ShowUIPanel(transmogFrame)
+        end)
+        return
+    end
+
+    self.IsReopeningFrame = true
+    self:SetDisplayMode(displayMode)
+
+    if transmogFrame then
+        HideUIPanel(transmogFrame)
+        ShowUIPanel(transmogFrame)
+
+        self.IsReopeningFrame = false
+        -- re-emit after show so handlers can apply to a fully loaded frame
+        Core.EventFrame:FireScript("OnTransmogFrameDisplayModeChanged", self.DisplayMode)
+        return
+    end
+
+    self.IsReopeningFrame = false
+end
+
 
 function Module:GetStaticSizedChildrenWidth()
     local outfitCollectionModule = self.Modules.OutfitCollection;
@@ -64,7 +154,6 @@ function Module:GetStaticSizedChildrenWidth()
     if characterPreviewFrame then
         characterPreviewFrameWidth = characterPreviewFrame:GetWidth();
     end
-
 
     return outfitCollectionFrameWidth + characterPreviewFrameWidth;
 end
@@ -107,7 +196,6 @@ function Module:SetMinFrameHeight(minHeight, autoAdjust)
     end
 end
 
-
 --- sets the maximum width of the TransmogFrame and optionally auto-adjusts the frame width
 ---@param maxWidth? number The maximum width to set for the TransmogFrame (default: infinite)
 ---@param autoAdjust? boolean If true, the frame will automatically adjust to meet the maximum width if it's currently bigger (default: true)
@@ -137,7 +225,7 @@ function Module:SetMaxFrameHeight(maxHeight, autoAdjust)
     local transmogFrame = self:GetFrame();
     local currentMinWidth, currentMinHeight, currentMaxWidth, _ = transmogFrame:GetResizeBounds()   
 
-    Module:DebugLog("Setting TransmogFrame maximum frame width to " .. tostring(maxHeight))
+    Module:DebugLog("Setting TransmogFrame maximum frame height to " .. tostring(maxHeight))
     transmogFrame:SetResizeBounds(currentMinWidth, currentMinHeight, currentMaxWidth, maxHeight)
 
     if autoAdjust and maxHeight and transmogFrame:GetHeight() > maxHeight then
@@ -145,7 +233,6 @@ function Module:SetMaxFrameHeight(maxHeight, autoAdjust)
         transmogFrame:SetHeight(maxHeight);
     end
 end
-
 
 --- sets the minimum size of the transmogFrame and optionally auto-adjusts the frame to that size if it's currently smaller.
 ---@param minWidth number The minimum width to set for the TransmogFrame
@@ -155,7 +242,6 @@ function Module:SetMinFrameSize(minWidth, minHeight, autoAdjust)
     self:SetMinFrameWidth(minWidth, autoAdjust);
     self:SetMinFrameHeight(minHeight, autoAdjust);
 end
-
 
 --- sets the minimum size of the transmogFrame and optionally auto-adjusts the frame to that size if it's currently smaller.
 ---@param maxWidth? number The minimum width to set for the TransmogFrame (default: infinite) 
@@ -184,10 +270,9 @@ end
 
 function Module:SetDefaultResizeBounds()
     -- set default
-    self:GetFrame():SetResizeBounds(10,10);
+    self:GetFrame():SetResizeBounds(Module.Settings.MinResizeBounds.Width, Module.Settings.MinResizeBounds.Height);
     self:SetMinFrameSize(Module.Settings.MinWidth, Module.Settings.MinHeight, true);
     
-
     --- check if size module is loaded, and adjust accordingly
     --- @type BetterTransmog.Modules.TransmogFrame.WardrobeCollection|nil
     local wardrobeCollectionModule = self:GetModule("WardrobeCollection");
@@ -196,32 +281,13 @@ function Module:SetDefaultResizeBounds()
     end
 end
 
----@param displayMode BetterTransmog.Modules.TransmogFrame.DisplayMode
-function Module:SetDisplayMode(displayMode)
-    Module:DebugLog("Setting TransmogFrame display mode to " .. tostring(displayMode))
+--- Pins the frame so width changes expand to the right
+function Module:PinToLeft()
+    local frame = self:GetFrame()
+    local left = frame:GetLeft()
+    local top = frame:GetTop()
+    if not left or not top then return end
 
-    if self.DisplayMode == displayMode then
-        Module:DebugLog("Display mode is already set to " .. tostring(displayMode) .. ", no changes needed.")
-        return
-    end
-
-    self.DisplayMode = displayMode;
-    Core.EventFrame:FireScript("OnTransmogFrameDisplayModeChanged", displayMode);
-end
-
----@param displayMode BetterTransmog.Modules.TransmogFrame.DisplayMode
-function Module:OpenTransmogFrame(displayMode)
-    
-    self:SetDisplayMode(displayMode);
-    
-    if displayMode == Module.Enum.DISPLAY_MODE.OUTFIT_SWAP then
-        
-        local transmogFrame = self:GetFrame();
-        if transmogFrame then
-            -- ensure frame is hidden first to stop interaction with transmog npc
-            HideUIPanel(transmogFrame);
-
-            ShowUIPanel(transmogFrame); -- important else we taint the frame.
-        end
-    end
+    frame:ClearAllPoints()
+    frame:SetPoint("TOPLEFT", UIParent, "BOTTOMLEFT", left, top)
 end

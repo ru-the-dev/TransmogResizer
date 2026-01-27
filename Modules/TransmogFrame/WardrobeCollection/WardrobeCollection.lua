@@ -30,6 +30,12 @@ local _wardrobeCollectionFrame = nil;
 Module.Settings = {
     MinFrameWidth = 450,
     SituationsTabMinWidth = 630,
+    TabContentOffsets = {
+        Left = 0,
+        Top = -35,
+        Right = 0,
+        Bottom = 0,
+    },
     TabContentFrame = {
         BackgroundPadding = {
             Top = 0,
@@ -50,25 +56,80 @@ Module.Settings = {
 -- Module Implementation
 -- =======================================================
 
----@param displayMode BetterTransmog.Modules.TransmogFrame.DisplayMode
-local function OnTransmogFrameDisplayModeChanged(eventFrame, handle, displayMode)
+
+---@param eventFrame Frame
+---@param handle any
+---@param displayMode string
+local function ApplyDisplayMode(eventFrame, handle, displayMode)
+    if not transmogFrameModule:IsValidDisplayMode(displayMode) then
+        Module:DebugLog("UnimplmentedDisplayMode: " .. tostring(displayMode))
+        return
+    end
+
     local wardrobeCollectionFrame = Module:GetFrame();
     if not wardrobeCollectionFrame then
         Module:DebugLog("WardrobeCollection frame not found, cannot adjust for display mode change.");
         return
     end
 
-    -- handle display mode change
     if displayMode == transmogFrameModule.Enum.DISPLAY_MODE.FULL then
         wardrobeCollectionFrame:Show();
+
+        if wardrobeCollectionFrame.SetToDefaultAvailableTab then
+            wardrobeCollectionFrame:SetToDefaultAvailableTab();
+        end
+
+        local tabContent = wardrobeCollectionFrame.TabContent
+        if tabContent then
+            local function RefreshFrame(frame)
+                if frame and frame.Refresh then
+                    frame:Refresh();
+                elseif frame and frame.RefreshCollectionEntries then
+                    frame:RefreshCollectionEntries();
+                end
+            end
+
+            RefreshFrame(tabContent.ItemsFrame)
+            RefreshFrame(tabContent.SetsFrame)
+            RefreshFrame(tabContent.CustomSetsFrame)
+
+            C_Timer.After(0, function()
+                RefreshFrame(tabContent.ItemsFrame)
+                RefreshFrame(tabContent.SetsFrame)
+                RefreshFrame(tabContent.CustomSetsFrame)
+            end)
+        end
+
+        if _G.TransmogFrame and _G.TransmogFrame.CharacterPreview and wardrobeCollectionFrame.UpdateSlot then
+            C_Timer.After(0, function()
+                local preview = _G.TransmogFrame.CharacterPreview
+                if preview.RefreshSlots then
+                    preview:RefreshSlots()
+                end
+
+                local selectedSlotData = preview.GetSelectedSlotData and preview:GetSelectedSlotData() or nil
+                if selectedSlotData then
+                    wardrobeCollectionFrame:UpdateSlot(selectedSlotData, true)
+                end
+            end)
+
+            C_Timer.After(0, function()
+                local preview = _G.TransmogFrame.CharacterPreview
+                if preview and preview.RefreshSlots then
+                    preview:RefreshSlots()
+                end
+
+                local selectedSlotData = preview and preview.GetSelectedSlotData and preview:GetSelectedSlotData() or nil
+                if selectedSlotData then
+                    wardrobeCollectionFrame:UpdateSlot(selectedSlotData, true)
+                end
+            end)
+        end
     elseif displayMode == transmogFrameModule.Enum.DISPLAY_MODE.OUTFIT_SWAP then
         Module:DebugLog("Hiding WardrobeCollection frame for OUTFIT_SWAP display mode.");
         wardrobeCollectionFrame:Hide();
-    else
-        Module:DebugLog("UnimplmentedDisplayMode: " .. tostring(displayMode))
     end
-end 
-
+end
 
 function Module:OnInitialize()
     Module:DebugLog("Applying changes to WardrobeCollection module.")
@@ -85,7 +146,7 @@ function Module:OnInitialize()
         transmogFrameModule:SetDefaultResizeBounds();
     end)
 
-    Core.EventFrame:AddScript("OnTransmogFrameDisplayModeChanged", OnTransmogFrameDisplayModeChanged);
+    Core.EventFrame:AddScript("OnTransmogFrameDisplayModeChanged", ApplyDisplayMode)
 end
 
 
@@ -134,9 +195,10 @@ function Module:FixAnchors()
 
     local tabContent = Core.Libs.LibRu.Utils.Frame.GetFrameByPath(wardrobeCollectionFrame, "TabContent");
     if tabContent then 
+        local offsets = Module.Settings.TabContentOffsets
         tabContent:ClearAllPoints()
-        tabContent:SetPoint("TOPLEFT", self:GetFrame(), "TOPLEFT", 0, -35)
-        tabContent:SetPoint("BOTTOMRIGHT", self:GetFrame())
+        tabContent:SetPoint("TOPLEFT", self:GetFrame(), "TOPLEFT", offsets.Left, offsets.Top)
+        tabContent:SetPoint("BOTTOMRIGHT", self:GetFrame(), "BOTTOMRIGHT", offsets.Right, offsets.Bottom)
 
         local background = Core.Libs.LibRu.Utils.Frame.GetFrameByPath(
             tabContent,

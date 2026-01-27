@@ -14,7 +14,15 @@ local DEFAULTS = {
     },
     TransmogFrame = {
         CharacterPreviewFrameWidth = 450,
-        FramePosition = {
+        CharacterPreviewCollapsedOutfit = false,
+        FramePositionFull = {
+            Point = "CENTER",
+            RelativeTo = "UIParent",
+            RelativePoint = "CENTER",
+            OffsetX = 0,
+            OffsetY = 0,
+        },
+        FramePositionOutfit = {
             Point = "CENTER",
             RelativeTo = "UIParent",
             RelativePoint = "CENTER",
