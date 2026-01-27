@@ -39,7 +39,6 @@ Made the changelog frame more user-friendly with better readability and smoother
 The bug/feedback button allows for copying a URL to the github issues page, which is the preferred place to give me feedback!
 ![Settings Buttons Screenshot](Assets/Screenshots/2.0.4_SettingsButtons.png)
 
-
 ## Codebase upgrades
 I won't bore you with the technical stuff, but under the hood, things are changing and improving! and if you are interested, you can always have a peek at the GitHub repo <3
 

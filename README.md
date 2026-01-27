@@ -6,10 +6,17 @@
 
 *   **Movable Transmog Frame:** Drag the frame to reposition it anywhere on screen; position is remembered across sessions
 *   **Resizable Transmog & Collections Frame:** Drag the resize handle to adjust the window size; size is remembered across sessions
+*   **Separate Size/Position Saving:** Distinct layouts saved for **Outfit Swap** and **Regular** modes
+*   **Outfit Swapping Mode:** Swap outfits anywhere with a dedicated, expandable outfit preview
+*   **Minimap Button:**  
+    - **Left‑Click:** Open outfit swapping panel  
+    - **Right‑Click:** Open settings
 *   **Dynamic Model Grid:** Automatically calculates optimal grid layout with new rows and columns based on your frame size for the Items, Sets, and Custom Sets pages
 *   **Adjustable Model Width:** Customize the character model display width via addon settings
 *   **Enhanced Camera Controls:** Zoom in and out further in the character preview for better inspection
 *   **Collapsible Outfit Menu:** Collapse and expand the outfit menu for a cleaner interface
+*   **Improved Changelog Panel:** More readable with smoother interactions
+*   **Improved Slash Commands:** Aliases and organized commands (e.g., `/bt`, `/bt outfits`, `/bt settings`)
 *   **Lightweight:** Minimal performance impact with efficient model loading
 *   **Responsive Design:** Frames adapt seamlessly to different window sizes and layouts
 
@@ -19,7 +26,7 @@
 2.  Drag the frame title to move it to your preferred position
 3.  Drag the **bottom-right resize handle** to adjust the frame size
 4.  Models will automatically reposition into a new grid layout with updated rows and columns
-5.  Collapse/expand the outfit menu as needed with the yellow arrow button
+5.  Use **Outfit Swapping Mode** to quickly switch between saved outfits
 6.  Adjust settings for your preferred viewing experience
 
 ## Configuration
